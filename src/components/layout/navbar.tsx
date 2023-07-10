@@ -90,7 +90,7 @@ export function Navbar() {
       <nav className="py-8 md:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
           <div className="font-semibold w-72">
-          <a href="/"><img className="w-56" src="/logo.png" alt="" /></a>
+          <img className="w-56" src="/logo.png" alt="" />
           </div>
           <NavbarButtonList buttons={buttons} />
           <div className="md:flex hidden justify-end items-center gap-4 w-72">
@@ -113,7 +113,7 @@ export function Navbar() {
           className="bg-neutral-800 w-2/3 h-full flex flex-col items-center py-4 px-4"
         >
           <div className="font-semibold w-full">
-            <a href="/"><img className="w-56" src="/logo.png" alt="" /></a>
+            <img className="w-56" src="/logo.png" alt="" />
             
           </div>
 

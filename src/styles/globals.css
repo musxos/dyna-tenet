@@ -10,3 +10,11 @@
     font-family: "Inter", sans-serif;
   }
 }
+
+@layer components {
+  .border-gradient {
+    @apply border-t-4;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(to left, #2d2e82, #3b82f6);
+  }
+}

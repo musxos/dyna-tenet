@@ -1,3 +1,4 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
@@ -37,34 +38,6 @@ export function NavbarConnectButton() {
   );
 }
 
-export function ChangeNetworkButton() {
-  return (
-    <div className="bg-neutral-800 hover:bg-neutral-700 hidden md:flex h-12 w-12 rounded items-center justify-center cursor-pointer active:scale-95 transition">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="28"
-        height="28"
-        viewBox="0 0 32 32"
-      >
-        <g fill="none" fill-rule="evenodd">
-          <circle cx="16" cy="16" r="16" fill="#627EEA" />
-          <g fill="#FFF" fill-rule="nonzero">
-            <path fill-opacity=".602" d="M16.498 4v8.87l7.497 3.35z" />
-            <path d="M16.498 4L9 16.22l7.498-3.35z" />
-            <path fill-opacity=".602" d="M16.498 21.968v6.027L24 17.616z" />
-            <path d="M16.498 27.995v-6.028L9 17.616z" />
-            <path
-              fill-opacity=".2"
-              d="m16.498 20.573l7.497-4.353l-7.497-3.348z"
-            />
-            <path fill-opacity=".602" d="m9 16.22l7.498 4.353v-7.701z" />
-          </g>
-        </g>
-      </svg>
-    </div>
-  );
-}
-
 export function Navbar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
@@ -90,13 +63,12 @@ export function Navbar() {
       <nav className="py-8 md:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
           <div className="font-semibold w-72">
-          <img className="w-56" src="/logo.png" alt="" />
+            <img className="w-56" src="/logo.png" alt="" />
           </div>
           <NavbarButtonList buttons={buttons} />
           <div className="md:flex hidden justify-end items-center gap-4 w-72">
-            <ChangeNetworkButton />
             <div>
-              <NavbarConnectButton />
+              <ConnectButton />
             </div>
           </div>
           <button
@@ -114,13 +86,12 @@ export function Navbar() {
         >
           <div className="font-semibold w-full">
             <img className="w-56" src="/logo.png" alt="" />
-            
           </div>
 
           <div className="flex flex-col mt-12 w-full">
             {buttons.map((button, i) => {
               return (
-                <button className="text-2xl py-2 text-left w-full">
+                <button key={i} className="text-2xl py-2 text-left w-full">
                   {button.name}
                 </button>
               );
@@ -128,7 +99,7 @@ export function Navbar() {
           </div>
 
           <div className="mt-auto">
-            <NavbarConnectButton />
+            <ConnectButton />
           </div>
         </div>
       </div>

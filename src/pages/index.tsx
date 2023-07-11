@@ -1,58 +1,45 @@
+import { Tokens } from "@/app/constant/tokens";
 import { LineChartComponent } from "@/components/chart/line-chart";
 import { Navbar } from "@/components/layout/navbar";
+import { Swapper } from "@/components/swapper";
+import useTokenSwapper from "@/hooks/useTokenSwapper";
+import { useMemo, useState } from "react";
 
 export default function Home() {
+  const tokenSwapper = useTokenSwapper();
+
+  const [routes, setRoute] = useState<any[]>();
+
+  useMemo(() => {
+    const wTENET = Tokens.find(
+      (x) => x.address == "0xe3AdAA56DCBb8235E9d0DAeB8e7AD892804f6fE8",
+    );
+
+    const sellToken = tokenSwapper.tokenSwapper.sellToken;
+    const buyToken = tokenSwapper.tokenSwapper.buyToken;
+
+    if (buyToken?.pairs.some((x) => x == sellToken?.address)) {
+      setRoute([[sellToken!, buyToken!]]);
+    } else {
+      setRoute([
+        [sellToken!, wTENET!],
+        [wTENET!, buyToken!],
+      ]);
+    }
+  }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
+
   return (
     <>
       <Navbar />
       <main className="container mx-auto mt-12 md:px-0 px-4 mb-8">
         <div className="flex md:flex-row flex-col gap-12">
-          <div className="p-6 w-full md:w-96 rounded-xl border border-neutral-700 bg-neutral-800 h-max">
-            <ul className="flex gap-4">
-              <li className="text-white font-semibold cursor-pointer">Swap</li>
-              <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
-                Transfer
-              </li>
-              <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
-                Limit
-              </li>
-              <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
-                OTC
-              </li>
-            </ul>
-            <div className="flex flex-col mt-6 gap-6">
-              <div className="flex flex-col">
-                <span className="text-xs font-medium">Ödeme</span>
-                <input
-                  required
-                  className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
-                  placeholder="0"
-                  type="text"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-medium">Çekme</span>
-                <input
-                  className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
-                  placeholder="0"
-                  type="text"
-                />
-              </div>
-              <div className="flex flex-col">
-                <button className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition">
-                  Connect Wallet
-                </button>
-              </div>
-              <div className="flex px-4 py-3 border rounded border-neutral-700 bg-neutral-700/20">
-                1 DYNA = 0.00000000 USD
-              </div>
-            </div>
-          </div>
+          <Swapper />
           <div className="grow">
             <div className="flex flex-col w-full">
               <div className="flex flex-col mb-2">
                 <span className="text-white/80 text-xs font-semibold">
-                  USDT / DYNA
+                  {tokenSwapper.tokenSwapper.buyToken?.symbol} /{" "}
+                  {tokenSwapper.tokenSwapper.sellToken?.symbol}
                 </span>
                 <span className="text-white text-2xl font-semibold">
                   1869.34
@@ -82,44 +69,33 @@ export default function Home() {
                 </button>
               </div>
               <div className="mt-8 rounded border border-neutral-800 px-12 py-4">
-                <div className="text-center text-white/80">
-                  Estimated Gas Price
-                </div>
+                <div className="text-center text-white/80">Trade Route</div>
                 <div className="mt-12 flex flex-col gap-4">
-                  <div className="flex items-center">
-                    <img
-                      className="w-11 h-11 p-2 rounded-full bg-neutral-800"
-                      src="/eth.png"
-                      alt=""
-                    />
-                    <div className="grow border-b-4 border-neutral-700 border-dotted relative">
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white/80 text-sm">
-                        3.5 ETH
+                  {routes?.map((route, i) => {
+                    const sellToken = route[0];
+                    const buyToken = route[1];
+
+                    return (
+                      <div key={i} className="flex items-center">
+                        <img
+                          className="w-11 h-11 rounded-full bg-neutral-800"
+                          src={sellToken.image}
+                          alt=""
+                        />
+                        <div className="grow border-b-4 border-neutral-700 border-dotted relative">
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white/80 text-sm">
+                            {tokenSwapper.tokenSwapper.amount}{" "}
+                            {sellToken.symbol}
+                          </div>
+                        </div>
+                        <img
+                          className="w-11 h-11 rounded-full bg-neutral-800"
+                          src={buyToken.image}
+                          alt=""
+                        />
                       </div>
-                    </div>
-                    <img
-                      className="w-11 h-11 p-2 rounded-full bg-neutral-800"
-                      src="/eth.png"
-                      alt=""
-                    />
-                  </div>
-                  <div className="flex items-center">
-                    <img
-                      className="w-11 h-11 p-2 rounded-full bg-neutral-800"
-                      src="/eth.png"
-                      alt=""
-                    />
-                    <div className="grow border-b-4 border-neutral-700 border-dotted relative">
-                      <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-white/80 text-sm">
-                        3.18 ETH
-                      </div>
-                    </div>
-                    <img
-                      className="w-11 h-11 p-2 rounded-full bg-neutral-800"
-                      src="/eth.png"
-                      alt=""
-                    />
-                  </div>
+                    );
+                  })}
                 </div>
               </div>
               <div className="mt-8 rounded border border-neutral-800 overflow-x-auto">
@@ -127,18 +103,18 @@ export default function Home() {
                   <thead>
                     <tr className="text-left">
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Exchange
+                        Type
                       </th>
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Price
-                      </th>
-
-                      <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Spread
+                        Price ({tokenSwapper.tokenSwapper.sellToken?.symbol})
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Change
+                        Total
+                      </th>
+
+                      <th className="text-white/80 text-xs font-semibold py-4 px-4">
+                        Amount ({tokenSwapper.tokenSwapper.buyToken?.symbol})
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
@@ -146,7 +122,7 @@ export default function Home() {
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Action
+                        Maker
                       </th>
                     </tr>
                   </thead>
@@ -154,9 +130,8 @@ export default function Home() {
                     <tr>
                       <td className="text-white text-sm font-semibold py-2 px-4 ">
                         <div className="flex items-center gap-2">
-                          Binance
-                          <div className="text-xs bg-green-300 w-max px-1 py-0.5 rounded text-black ">
-                            Best Price
+                          <div className="bg-green-300 w-max px-2 py-0.5 rounded text-black ">
+                            Buy
                           </div>
                         </div>
                       </td>
@@ -164,36 +139,11 @@ export default function Home() {
                         1869.34
                       </td>
                       <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        0.01%
+                        3.000
                       </td>
 
                       <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        -4.41%
-                      </td>
-
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        1 minute ago
-                      </td>
-
-                      <td className="text-white text-sm font-semibold py-2 px-4">
-                        <button className="rounded-xl px-4  py-1 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition">
-                          Buy
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        <div className="flex items-center gap-2">Coinbase</div>
-                      </td>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        1869.34
-                      </td>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        0.01%
-                      </td>
-
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        -4.41%
+                        4.5
                       </td>
 
                       <td className="text-white text-sm font-semibold py-2 px-4 ">
@@ -201,9 +151,12 @@ export default function Home() {
                       </td>
 
                       <td className="text-white text-sm font-semibold py-2 px-4">
-                        <button className="rounded-xl px-4  py-1 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition">
-                          Buy
-                        </button>
+                        <a
+                          href="google.com"
+                          className="text-blue-500 underline"
+                        >
+                          0x4b08...d2db
+                        </a>
                       </td>
                     </tr>
                   </tbody>

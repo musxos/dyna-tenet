@@ -2,7 +2,7 @@ import { Area, AreaChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export function LineChartComponent() {
   const data = new Array(300).fill(0).map((_, i) => ({
-    value: Math.random() * 1000 + (Math.sin(i / 10) * 1000) / 3,
+    value: 0,
   }));
 
   return (

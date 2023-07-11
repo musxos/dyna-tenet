@@ -1,4 +1,76 @@
 import { Navbar } from "@/components/layout/navbar";
+import classNames from "classnames";
+import { useState } from "react";
+
+export function ListItem() {
+  const [open, setOpen] = useState(false);
+
+  const className = classNames(
+    "col-span-6 h-full overflow-hidden transition-all border-gradient flex flex-col",
+    {
+      "max-h-0 mt-0 border-t-0": !open,
+      "max-h-[512px] mt-4 pt-4": open,
+    },
+  );
+
+  return (
+    <div
+      onClick={() => setOpen((v) => !v)}
+      className="grid grid-cols-6 bg-neutral-800 py-4 rounded-md active:scale-[.99] transition cursor-pointer"
+    >
+      <div className="flex items-center col-span-2 pl-4 ">
+        <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
+          <img className=" rounded-full" src="/usdt.webp" alt="" />
+        </div>
+        <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
+          <img className=" rounded-full" src="/eth2.png" alt="" />
+        </div>
+        <h2 className="text-lg font-inter font-medium ml-4">USDT / ETH</h2>
+      </div>
+      <div className="flex items-center col-span-1 ">
+        <span className="font-inter text-white/50 text-sm">Stable</span>
+      </div>
+      <div className="flex items-center col-span-1 ">
+        <span className="text-lg font-inter font-medium">$6,663,268.7</span>
+      </div>
+      <div className="flex items-center col-span-1 ">
+        <span className="text-lg font-inter font-medium">3.9%</span>
+      </div>
+      <div className="flex items-center justify-end col-span-1 pr-4">
+        <button className="font-inter text-sm font-medium text-white/50">
+          Add Liquidity
+        </button>
+      </div>
+      <div className={className}>
+        <div className="grid grid-cols-6 mb-6">
+          <div className="flex flex-col col-span-1 pl-6 ">
+            <h4 className="text-sm">Total APR</h4>
+            <span className="text-lg">13.8%</span>
+          </div>
+          <div className="flex flex-col col-span-1">
+            <h4 className="text-sm">Fee APR</h4>
+            <span className="text-lg">13.8%</span>
+          </div>
+          <div className="flex flex-col col-span-1">
+            <h4 className="text-sm">Rewards APR</h4>
+            <span className="text-lg">13.8%</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-6">
+          <div className="flex flex-col col-span-1 pl-6">
+            <h4 className="text-sm">My Position</h4>
+            <span className="text-lg">-</span>
+          </div>
+          <div className="flex flex-col col-span-1">
+            <h4 className="text-sm">My Stalked</h4>
+            <span className="text-lg">-</span>
+          </div>
+          <div className="col-span-1"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Pool() {
   return (
@@ -206,74 +278,31 @@ export default function Pool() {
           </div>
 
           <div className="mt-4">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th className="text-left font-inter font-normal text-white/50 text-sm pb-4">
-                    Pool
-                  </th>
-                  <th className="text-left font-inter font-normal text-white/50 text-sm pb-4">
-                    Type
-                  </th>
-                  <th className="text-left font-inter font-normal text-white/50 text-sm pb-4">
-                    Liquidity
-                  </th>
-                  <th className="text-left font-inter font-normal text-white/50 text-sm pb-4">
-                    APR
-                  </th>
-                  <th className="text-left font-inter font-normal text-white/50 text-sm pb-4"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="bg-neutral-800 rounded">
-                  <td className="py-4 pl-6">
-                    <div className="flex items-center">
-                      <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
-                        <img
-                          className=" rounded-full"
-                          src="/usdt.webp"
-                          alt=""
-                        />
-                      </div>
-                      <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
-                        <img className=" rounded-full" src="/eth2.png" alt="" />
-                      </div>
-                      <h2 className="text-lg font-inter font-medium ml-4">
-                        USDT / ETH
-                      </h2>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center">
-                      <span className="font-inter text-white/50 text-sm">
-                        Stable
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center">
-                      <span className="text-lg font-inter ml-2 font-medium">
-                        $6,663,268.7
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4">
-                    <div className="flex items-center">
-                      <span className="text-lg font-inter ml-2 font-medium">
-                        3.9%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-4 pr-6">
-                    <div className="flex items-center justify-end">
-                      <button className="font-inter text-sm font-medium text-white/50">
-                        Add Liquidity
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="w-full">
+              <div className="grid grid-cols-6">
+                <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-2">
+                  Pool
+                </p>
+                <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-1">
+                  Type
+                </p>
+                <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-1">
+                  Liquidity
+                </p>
+                <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-1">
+                  APR
+                </p>
+                <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-1"></p>
+              </div>
+              <div>
+                <div className="flex flex-col gap-2 rounded">
+                  <ListItem />
+                  <ListItem />
+                  <ListItem />
+                  <ListItem />
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </main>

@@ -1,7 +1,8 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
+import { useAccount } from "wagmi";
 
 interface NavbarButtonProps {
   name: string;
@@ -31,14 +32,20 @@ export function NavbarButtonList({ buttons }: NavbarButtonListProps) {
 }
 
 export function NavbarConnectButton() {
+  const { openConnectModal } = useConnectModal();
+
   return (
-    <button className="bg-neutral-800 hover:bg-neutral-700 h-12 px-6 rounded flex items-center justify-center cursor-pointer active:scale-95 transition">
+    <button
+      onClick={openConnectModal}
+      className="bg-neutral-800 hover:bg-neutral-700 h-12 px-6 rounded flex items-center justify-center cursor-pointer active:scale-95 transition"
+    >
       Connect Wallet
     </button>
   );
 }
 
 export function Navbar() {
+  const account = useAccount();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
 
@@ -62,13 +69,14 @@ export function Navbar() {
     <>
       <nav className="py-8 md:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
-          <div className="font-semibold w-72">
+          <div className="font-semibold w-96">
             <img className="w-56" src="/logo.png" alt="" />
           </div>
           <NavbarButtonList buttons={buttons} />
-          <div className="md:flex hidden justify-end items-center gap-4 w-72">
+          <div className="md:flex hidden justify-end items-center gap-4 w-96">
             <div>
-              <ConnectButton />
+              {account.isConnected && <ConnectButton />}
+              {!account.isConnected && <NavbarConnectButton />}
             </div>
           </div>
           <button

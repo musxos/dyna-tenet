@@ -9,18 +9,18 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, zora } from "wagmi/chains";
+import { mainnet, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
+import { tenetRPC } from "@/app/tenetRPC";
 
 const { chains, publicClient } = configureChains(
-  [mainnet, polygon],
+  [tenetRPC, polygon],
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://${chain.id}.example.com`,
-        webSocket: `wss://${chain.id}.example.com`,
+        http: "https://rpc.testnet.tenet.org",
+        ws: "wss://rpc.testnet.tenet.org/ws",
       }),
-      stallTimeout: 1000,
     }),
     alchemyProvider({ stallTimeout: 1000 }),
   ],

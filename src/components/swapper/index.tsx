@@ -3,8 +3,10 @@ import Modal from "../modal";
 import { Tokens } from "@/app/constant/tokens";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { Token } from "@/features/token-swapper/token-swapper.slice";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead, useContractWrite } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+
+const NumberFormatter = new Intl.NumberFormat("en-US");
 
 export enum SwapperChainButtonType {
   Sell,
@@ -168,11 +170,183 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
   );
 }
 
-export function Swapper() {
+export function Swapper({ routes }: any) {
+  const tokenSwapper = useTokenSwapper();
+  const [approved, setApproved] = useState(false);
+
   const account = useAccount();
   const { openConnectModal } = useConnectModal();
 
-  const tokenSwapper = useTokenSwapper();
+  const wTENET = Tokens.find(
+    (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
+  );
+
+  const getAmountOutContract = useContractRead({
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "amountIn",
+            type: "uint256",
+          },
+          {
+            internalType: "address[]",
+            name: "path",
+            type: "address[]",
+          },
+        ],
+        name: "getAmountsOut",
+        outputs: [
+          {
+            internalType: "uint256[]",
+            name: "amounts",
+            type: "uint256[]",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ],
+    address: "0x1D4BAFF7891f71F00B6F193F8adb88692ca2aEEf",
+    functionName: "getAmountsOut",
+    args: [
+      tokenSwapper.tokenSwapper.amount * 10 ** 18,
+      routes.length < 2
+        ? [
+            tokenSwapper.tokenSwapper.sellToken?.address,
+            tokenSwapper.tokenSwapper.buyToken?.address,
+          ]
+        : [
+            tokenSwapper.tokenSwapper.sellToken?.address,
+            wTENET!.address,
+            tokenSwapper.tokenSwapper.buyToken?.address,
+          ],
+    ],
+    select: (data: any) => {
+      console.log(data);
+      return Number(data[data.length - 1]) / 10 ** 18;
+    },
+  });
+
+  const approveContract = useContractWrite({
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: "address",
+            name: "spender",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "amount",
+            type: "uint256",
+          },
+        ],
+        name: "approve",
+        outputs: [
+          {
+            internalType: "bool",
+            name: "",
+            type: "bool",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+    ],
+    address: tokenSwapper.tokenSwapper.sellToken?.address as any,
+    functionName: "approve",
+    value: BigInt(0),
+  });
+
+  const handleApproveClick = async () => {
+    const result = await approveContract.writeAsync({
+      args: [
+        "0x1D4BAFF7891f71F00B6F193F8adb88692ca2aEEf",
+        tokenSwapper.tokenSwapper.amount * 10 ** 18,
+      ],
+    });
+
+    if (result) {
+      setApproved(true);
+    }
+
+    console.log(result);
+  };
+
+  const swapContract = useContractWrite({
+    abi: [
+      {
+        inputs: [
+          {
+            internalType: "uint256",
+            name: "amountIn",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "amountOutMin",
+            type: "uint256",
+          },
+          {
+            internalType: "address[]",
+            name: "path",
+            type: "address[]",
+          },
+          {
+            internalType: "address",
+            name: "to",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "deadline",
+            type: "uint256",
+          },
+        ],
+        name: "swapExactTokensForTokens",
+        outputs: [
+          {
+            internalType: "uint256[]",
+            name: "amounts",
+            type: "uint256[]",
+          },
+        ],
+        stateMutability: "nonpayable",
+        type: "function",
+      },
+    ],
+    functionName: "swapExactTokensForTokens",
+    address: "0x1D4BAFF7891f71F00B6F193F8adb88692ca2aEEf",
+    value: BigInt(0),
+  });
+
+  const handleSwapClick = async (e: any) => {
+    e.preventDefault();
+
+    const result = await swapContract.writeAsync({
+      args: [
+        tokenSwapper.tokenSwapper.amount * 10 ** 18,
+        0,
+        routes.length < 2
+          ? [
+              tokenSwapper.tokenSwapper.sellToken?.address,
+              tokenSwapper.tokenSwapper.buyToken?.address,
+            ]
+          : [
+              tokenSwapper.tokenSwapper.sellToken?.address,
+              wTENET!.address,
+              tokenSwapper.tokenSwapper.buyToken?.address,
+            ],
+        account.address,
+        Math.floor(Date.now() / 1000) + 60 * 20,
+      ],
+    });
+
+    console.log(result);
+  };
 
   const estimatedPrice = useMemo(() => {
     return 3.5 * tokenSwapper.tokenSwapper.amount;
@@ -198,13 +372,17 @@ export function Swapper() {
           <div className="flex flex-col relative w-full">
             <input
               value={tokenSwapper.tokenSwapper.amount}
-              onChange={(e) =>
-                tokenSwapper.setAmount(Number(e.target.value || 0))
-              }
+              onChange={(e) => {
+                if (isNaN(Number(e.target.value))) {
+                  return;
+                }
+
+                tokenSwapper.setAmount(Number(e.target.value));
+              }}
               required
               className="rounded-xl px-4 text-lg py-4 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
               placeholder="0"
-              type="text"
+              type="number"
             />
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
           </div>
@@ -213,7 +391,7 @@ export function Swapper() {
           <span className="text-xs font-medium mb-2">Çekme</span>
           <div className="flex flex-col relative w-full">
             <input
-              value={estimatedPrice}
+              value={NumberFormatter.format(getAmountOutContract.data || 0)}
               disabled
               required
               className="rounded-xl px-4 text-lg py-4 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
@@ -232,8 +410,19 @@ export function Swapper() {
               Connect Wallet
             </button>
           )}
-          {account.isConnected && (
-            <button className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition">
+          {account.isConnected && !approved && (
+            <button
+              onClick={handleApproveClick}
+              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+            >
+              Approve
+            </button>
+          )}
+          {account.isConnected && approved && (
+            <button
+              onClick={handleSwapClick}
+              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+            >
               Swap
             </button>
           )}

@@ -18,3 +18,7 @@
     border-image-source: linear-gradient(to left, #2d2e82, #3b82f6);
   }
 }
+
+nextjs-portal {
+  display: none;
+}

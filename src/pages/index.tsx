@@ -4,6 +4,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Swapper } from "@/components/swapper";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { useMemo, useState } from "react";
+import { useContractRead, useContractWrite } from "wagmi";
 
 export default function Home() {
   const tokenSwapper = useTokenSwapper();
@@ -12,7 +13,7 @@ export default function Home() {
 
   useMemo(() => {
     const wTENET = Tokens.find(
-      (x) => x.address == "0xe3AdAA56DCBb8235E9d0DAeB8e7AD892804f6fE8",
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     );
 
     const sellToken = tokenSwapper.tokenSwapper.sellToken;
@@ -33,7 +34,7 @@ export default function Home() {
       <Navbar />
       <main className="container mx-auto mt-12 md:px-0 px-4 mb-8">
         <div className="flex md:flex-row flex-col gap-12">
-          <Swapper />
+          <Swapper routes={routes} />
           <div className="grow">
             <div className="flex flex-col w-full">
               <div className="flex flex-col mb-2">

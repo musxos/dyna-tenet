@@ -61,7 +61,7 @@ export function Navbar() {
     {
       "translate-x-0": sidebarOpen,
       "-translate-x-full": !sidebarOpen,
-    }
+    },
   );
 
   const buttons = [

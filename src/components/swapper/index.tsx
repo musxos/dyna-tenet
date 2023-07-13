@@ -3,7 +3,12 @@ import Modal from "../modal";
 import { Tokens } from "@/app/constant/tokens";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { Token } from "@/features/token-swapper/token-swapper.slice";
-import { useAccount, useContractRead, useContractWrite } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 const NumberFormatter = new Intl.NumberFormat("en-US");
@@ -172,7 +177,6 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
 
 export function Swapper({ routes }: any) {
   const tokenSwapper = useTokenSwapper();
-  const [approved, setApproved] = useState(false);
 
   const account = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -261,6 +265,10 @@ export function Swapper({ routes }: any) {
     value: BigInt(0),
   });
 
+  const approveWaitForTransaction = useWaitForTransaction({
+    hash: approveContract.data?.hash,
+  });
+
   const handleApproveClick = async () => {
     const result = await approveContract.writeAsync({
       args: [
@@ -268,12 +276,6 @@ export function Swapper({ routes }: any) {
         tokenSwapper.tokenSwapper.amount * 10 ** 18,
       ],
     });
-
-    if (result) {
-      setApproved(true);
-    }
-
-    console.log(result);
   };
 
   const swapContract = useContractWrite({
@@ -323,6 +325,10 @@ export function Swapper({ routes }: any) {
     value: BigInt(0),
   });
 
+  const swapWaitForTransaction = useWaitForTransaction({
+    hash: swapContract.data?.hash,
+  });
+
   const handleSwapClick = async (e: any) => {
     e.preventDefault();
 
@@ -344,13 +350,21 @@ export function Swapper({ routes }: any) {
         Math.floor(Date.now() / 1000) + 60 * 20,
       ],
     });
-
-    console.log(result);
   };
 
-  const estimatedPrice = useMemo(() => {
-    return 3.5 * tokenSwapper.tokenSwapper.amount;
-  }, [tokenSwapper.tokenSwapper.amount]);
+  useMemo(() => {
+    if (swapWaitForTransaction.isSuccess) {
+      setTimeout(() => {
+        swapContract.reset();
+        approveContract.reset();
+      }, 2000);
+    }
+  }, [swapWaitForTransaction.isSuccess]);
+
+  useMemo(() => {
+    approveContract.reset();
+    swapContract.reset();
+  }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
   return (
     <div className="p-6 w-full md:w-96 rounded-xl border border-neutral-700 bg-neutral-800 h-max grow shrink-0">
@@ -410,20 +424,34 @@ export function Swapper({ routes }: any) {
               Connect Wallet
             </button>
           )}
-          {account.isConnected && !approved && (
+          {account.isConnected && !approveWaitForTransaction.isSuccess && (
             <button
               onClick={handleApproveClick}
+              disabled={
+                approveWaitForTransaction.isLoading ||
+                approveWaitForTransaction.isFetching
+              }
               className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
             >
-              Approve
+              {approveWaitForTransaction.isLoading ||
+              approveWaitForTransaction.isFetching
+                ? "Approving..."
+                : approveWaitForTransaction.isSuccess
+                ? "Approved"
+                : "Approve"}
             </button>
           )}
-          {account.isConnected && approved && (
+          {account.isConnected && approveWaitForTransaction.isSuccess && (
             <button
               onClick={handleSwapClick}
               className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
             >
-              Swap
+              {swapWaitForTransaction.isLoading ||
+              swapWaitForTransaction.isFetching
+                ? "Swapping..."
+                : swapWaitForTransaction.isSuccess
+                ? "Swapped"
+                : "Swap"}
             </button>
           )}
         </div>

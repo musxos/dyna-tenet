@@ -23,7 +23,7 @@ export default function Modal(props: ModalProps) {
 
   return mounted && props.open
     ? createPortal(
-        <div className="fixed  top-0 left-0 w-full h-full overflow-auto bg-black/40 z-50 flex items-center justify-center">
+        <div className="fixed  top-0 left-0 w-full h-full overflow-hidden bg-black/40 z-50 flex items-center justify-center">
           <div ref={modalRef} className={props.className}>
             {props.children}
           </div>

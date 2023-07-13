@@ -1,9 +1,30 @@
+import config from "@/app/config";
+import { Pool, PoolType, Pools } from "@/app/constant/pools";
 import { Navbar } from "@/components/layout/navbar";
+import { useLiquid } from "@/components/liquid-modal";
+import { useApprove } from "@/hooks/useApprove";
+import { useBalanceOf } from "@/hooks/useBalanceOf";
+import { useGetReserves } from "@/hooks/useGetReserves";
+import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-export function ListItem() {
+const NumberFormatter = new Intl.NumberFormat("en-US");
+
+export type ListItemProps = {
+  pool: Pool;
+};
+
+export function ListItem({ pool }: ListItemProps) {
   const [open, setOpen] = useState(false);
+  const [liquidity, setLiquid] = useState(0);
+  const liquid = useLiquid({
+    pool: pool,
+  });
+
+  const totalSupply = useTotalSupply(pool.pool.pairAddress);
+  const balanceOf = useBalanceOf(pool.pool.pairAddress);
+  const reserves = useGetReserves(pool.pool.pairAddress);
 
   const className = classNames(
     "col-span-6 h-full overflow-hidden transition-all border-gradient flex flex-col",
@@ -13,62 +34,93 @@ export function ListItem() {
     },
   );
 
+  useMemo(() => {
+    setLiquid(
+      reserves.data.reserve0 * pool.owner.price +
+        reserves.data.reserve1 * pool.target.price,
+    );
+  }, [reserves.data]);
+
   return (
-    <div
-      onClick={() => setOpen((v) => !v)}
-      className="grid grid-cols-6 bg-neutral-800 py-4 rounded-md active:scale-[.99] transition cursor-pointer"
-    >
-      <div className="flex items-center col-span-2 pl-4 ">
-        <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
-          <img className=" rounded-full" src="/usdt.webp" alt="" />
+    <>
+      {liquid.modal}
+      <div
+        onClick={() => setOpen((v) => !v)}
+        className="grid grid-cols-6 bg-neutral-800 py-4 rounded-md active:scale-[.99] transition cursor-pointer"
+      >
+        <div className="flex items-center col-span-2 pl-4 ">
+          <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
+            <img className=" rounded-full" src={pool.owner.image} alt="" />
+          </div>
+          <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
+            <img className=" rounded-full" src={pool.target.image} alt="" />
+          </div>
+          <h2 className="text-lg font-inter font-medium ml-4">
+            {pool.owner.symbol} / {pool.target.symbol}
+          </h2>
         </div>
-        <div className="w-10 h-10 bg-neutral-700 rounded-full border border-neutral-700">
-          <img className=" rounded-full" src="/eth2.png" alt="" />
+        <div className="flex items-center col-span-1 ">
+          <span className="font-inter text-white/50 text-sm">Stable</span>
         </div>
-        <h2 className="text-lg font-inter font-medium ml-4">USDT / ETH</h2>
-      </div>
-      <div className="flex items-center col-span-1 ">
-        <span className="font-inter text-white/50 text-sm">Stable</span>
-      </div>
-      <div className="flex items-center col-span-1 ">
-        <span className="text-lg font-inter font-medium">$6,663,268.7</span>
-      </div>
-      <div className="flex items-center col-span-1 ">
-        <span className="text-lg font-inter font-medium">3.9%</span>
-      </div>
-      <div className="flex items-center justify-end col-span-1 pr-4">
-        <button className="font-inter text-sm font-medium text-white/50">
-          Add Liquidity
-        </button>
-      </div>
-      <div className={className}>
-        <div className="grid grid-cols-6 mb-6">
-          <div className="flex flex-col col-span-1 pl-6 ">
-            <h4 className="text-sm">Total APR</h4>
-            <span className="text-lg">13.8%</span>
+        <div className="flex items-center col-span-1 ">
+          <span className="text-lg font-inter font-medium">
+            ${NumberFormatter.format(liquidity)}
+          </span>
+        </div>
+        <div className="flex items-center col-span-1 ">
+          <span className="text-lg font-inter font-medium">
+            {pool.pool.apr}%
+          </span>
+        </div>
+        <div className="flex items-center justify-end col-span-1 pr-4">
+          <button
+            onClick={() => liquid.setModalOpen(true)}
+            className="font-inter text-sm font-medium text-white/50"
+          >
+            Add Liquidity
+          </button>
+        </div>
+        <div className={className}>
+          <div className="grid grid-cols-6 mb-6">
+            <div className="flex flex-col col-span-1 pl-6 ">
+              <h4 className="text-sm">Total APR</h4>
+              <span className="text-lg">
+                {pool.pool.apr + pool.pool.rewardApr}%
+              </span>
+            </div>
+            <div className="flex flex-col col-span-1">
+              <h4 className="text-sm">Fee APR</h4>
+              <span className="text-lg">{pool.pool.feeApr}%</span>
+            </div>
+            <div className="flex flex-col col-span-1">
+              <h4 className="text-sm">Rewards APR</h4>
+              <span className="text-lg">{pool.pool.rewardApr}%</span>
+            </div>
           </div>
-          <div className="flex flex-col col-span-1">
-            <h4 className="text-sm">Fee APR</h4>
-            <span className="text-lg">13.8%</span>
-          </div>
-          <div className="flex flex-col col-span-1">
-            <h4 className="text-sm">Rewards APR</h4>
-            <span className="text-lg">13.8%</span>
+          <div className="grid grid-cols-6">
+            <div className="flex flex-col col-span-1 pl-6">
+              <h4 className="text-sm">My Position</h4>
+              <span className="text-lg whitespace-nowrap">
+                {NumberFormatter.format(
+                  balanceOf.data && totalSupply.data
+                    ? (balanceOf.data / totalSupply.data) *
+                        reserves.data.reserve0
+                    : 0,
+                )}{" "}
+                {pool.owner.symbol} /{" "}
+                {NumberFormatter.format(
+                  balanceOf.data && totalSupply.data
+                    ? (balanceOf.data / totalSupply.data) *
+                        reserves.data.reserve1
+                    : 0,
+                )}{" "}
+                {pool.target.symbol}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="grid grid-cols-6">
-          <div className="flex flex-col col-span-1 pl-6">
-            <h4 className="text-sm">My Position</h4>
-            <span className="text-lg">-</span>
-          </div>
-          <div className="flex flex-col col-span-1">
-            <h4 className="text-sm">My Stalked</h4>
-            <span className="text-lg">-</span>
-          </div>
-          <div className="col-span-1"></div>
-        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -296,10 +348,9 @@ export default function Pool() {
               </div>
               <div>
                 <div className="flex flex-col gap-2 rounded">
-                  <ListItem />
-                  <ListItem />
-                  <ListItem />
-                  <ListItem />
+                  {Pools.map((pool, i) => (
+                    <ListItem key={i} pool={pool} />
+                  ))}
                 </div>
               </div>
             </div>

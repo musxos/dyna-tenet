@@ -1,5 +1,6 @@
 import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { useAccount } from "wagmi";
@@ -7,6 +8,7 @@ import { useAccount } from "wagmi";
 interface NavbarButtonProps {
   name: string;
   active?: boolean;
+  path?: string;
   className?: string;
 }
 
@@ -15,17 +17,22 @@ interface NavbarButtonListProps {
   className?: string;
 }
 
-export function NavbarButton({ name }: NavbarButtonProps) {
+export function NavbarButton({ name, path }: NavbarButtonProps) {
   return (
     <li className="text-lg first:rounded-l last:rounded-r bg-neutral-800 hover:bg-neutral-700 px-6 py-2 h-12 flex items-center text-white/90 cursor-pointer active:scale-95 transition">
-      <a href={`/${name.toLowerCase()}`}>{name}</a>
+      <Link href={path!}>{name}</Link>
     </li>
   );
 }
 
 export function NavbarButtonList({ buttons }: NavbarButtonListProps) {
   const listItems = buttons.map((button, i) => (
-    <NavbarButton name={button.name} active={button.active} key={i} />
+    <NavbarButton
+      name={button.name}
+      active={button.active}
+      path={button.path}
+      key={i}
+    />
   ));
 
   return <ul className="hidden items-center md:flex">{listItems}</ul>;
@@ -54,13 +61,13 @@ export function Navbar() {
     {
       "translate-x-0": sidebarOpen,
       "-translate-x-full": !sidebarOpen,
-    },
+    }
   );
 
   const buttons = [
-    { name: "Trade", active: true },
-    { name: "Pool" },
-    { name: "Portfolio" },
+    { name: "Trade", path: "/", active: true },
+    { name: "Pool", path: "/pool" },
+    { name: "Portfolio", path: "/portfolio" },
   ];
 
   useOnClickOutside(sidebarRef, () => setSidebarOpen(false));

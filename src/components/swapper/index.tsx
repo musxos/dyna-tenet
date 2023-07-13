@@ -341,7 +341,7 @@ export function Swapper({ routes }: any) {
               tokenSwapper.tokenSwapper.buyToken?.address,
             ],
         account.address,
-        Math.floor(Date.now() / 1000) + 60 * 20,
+        Math.floor(Date.now() / 1000) + 60 * 1000,
       ],
     });
 

@@ -46,7 +46,7 @@ export function TableTokenItem({ token }: { token: Token }) {
             address: token.address,
             symbol: token.symbol,
             decimals: 18,
-            image: "http://localhost:3000" + token.image,
+            image: "https://dyna-tenet.vercel.app/" + token.image,
           },
         },
       });

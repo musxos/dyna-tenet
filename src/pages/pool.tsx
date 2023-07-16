@@ -153,7 +153,7 @@ export default function Pool() {
             </svg>{" "}
             <h2 className="font-inter text-white/90 font-medium">Trending</h2>
           </div>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-6">
             <div className="relative rounded-xl bg-neutral-800 h-32 w-full py-8 px-6">
               <div className="absolute bottom-0 translate-y-full left-5 w-44 h-1 rounded-b bg-gradient-to-l from-primary to-blue-500" />
               <div className="absolute top-0 -translate-y-1/2 left-10">
@@ -329,8 +329,8 @@ export default function Pool() {
             </svg>{" "}
           </div>
 
-          <div className="mt-4">
-            <div className="w-full">
+          <div className="mt-4 overflow-x-auto">
+            <div className="w-full min-w-max lg:min-w-fit">
               <div className="grid grid-cols-6">
                 <p className="text-left font-inter font-normal text-white/50 text-sm pb-4 col-span-2">
                   Pool

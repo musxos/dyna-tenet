@@ -35,7 +35,7 @@ export function NavbarButtonList({ buttons }: NavbarButtonListProps) {
     />
   ));
 
-  return <ul className="hidden items-center md:flex">{listItems}</ul>;
+  return <ul className="hidden items-center lg:flex">{listItems}</ul>;
 }
 
 export function NavbarConnectButton() {
@@ -74,13 +74,13 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="py-8 md:px-0 px-4">
+      <nav className="py-8 xl:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
           <div className="font-semibold w-96">
             <img className="w-56" src="/logo.png" alt="" />
           </div>
           <NavbarButtonList buttons={buttons} />
-          <div className="md:flex hidden justify-end items-center gap-4 w-96">
+          <div className="lg:flex hidden justify-end items-center gap-4 w-96">
             <div>
               {account.isConnected && <ConnectButton />}
               {!account.isConnected && <NavbarConnectButton />}
@@ -88,7 +88,7 @@ export function Navbar() {
           </div>
           <button
             onClick={() => setSidebarOpen((v) => !v)}
-            className="md:hidden w-10 h-10 rounded bg-neutral-800 flex items-center justify-center"
+            className="lg:hidden w-10 h-10 rounded bg-neutral-800 flex items-center justify-center"
           >
             ...
           </button>

@@ -46,7 +46,7 @@ export function TableTokenItem({ token }: { token: Token }) {
             address: token.address,
             symbol: token.symbol,
             decimals: 18,
-            image: "https://dyna-tenet.vercel.app/" + token.image,
+            image: "http://localhost:3000" + token.image,
           },
         },
       });
@@ -134,11 +134,11 @@ export default function Portfolio() {
   return (
     <>
       <Navbar />
-      <main className="container max-w-screen-lg mx-auto mt-12 md:px-0 px-4 mb-8">
+      <main className="container max-w-screen-lg mx-auto mt-12 lg:px-0 px-4 mb-8">
         <div className="flex flex-col">
           <div className="flex items-center">
-            <div className="w-24 h-24 rounded-md bg-neutral-800"></div>
-            <div className="flex flex-col ml-8">
+            <div className="lg:w-24 lg:h-24 w-20 h-20 rounded-md bg-neutral-800"></div>
+            <div className="flex flex-col ml-4 lg:ml-8">
               <h5 className="text-sm text-white/50">My Account</h5>
               {account.address && (
                 <h1 className="text-lg">
@@ -149,17 +149,23 @@ export default function Portfolio() {
             </div>
             <button
               onClick={claim}
-              className="rounded text-sm px-4 py-2 shadow text-white bg-neutral-800 font-semibold w-max hover:bg-primary-light active:scale-95 transition ml-auto"
+              className="rounded lg:block hidden text-sm px-4 py-2 shadow text-white bg-neutral-800 font-semibold w-max hover:bg-primary-light active:scale-95 transition ml-auto"
             >
               Claim Testnet Token
             </button>
           </div>
           <div className="flex items-center justify-between mt-8 text-white/60">
             <h4>+ Also view on</h4>
+            <button
+              onClick={claim}
+              className="rounded lg:hidden block text-sm px-4 py-2 shadow text-white bg-neutral-800 font-semibold w-max hover:bg-primary-light active:scale-95 transition ml-auto"
+            >
+              Claim Testnet Token
+            </button>
           </div>
           <div className="flex flex-col mt-8">
-            <div className="w-full">
-              <table className="w-full">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[716px]">
                 <thead>
                   <tr>
                     <th className="text-left text-white/60 pb-4 text-sm font-medium font-inter">

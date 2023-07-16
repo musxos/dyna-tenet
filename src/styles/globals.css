@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-neutral-900 text-white overflow-x-hidden w-screen;
+    @apply bg-neutral-900 text-white overflow-x-hidden w-screen h-full;
     font-family: "Inter", sans-serif;
   }
 }

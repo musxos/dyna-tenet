@@ -112,7 +112,7 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
             />
           </div>
         </div>
-        <div className="flex gap-2 mt-4 px-5">
+        <div className="gap-2 mt-4 px-5 hidden">
           <button className="flex items-center pl-2 pr-3 py-1 rounded-md bg-gray-100 text-black/50 active:scale-95 transition">
             <img className="w-6 h-6 rounded-full" src="/eth2.png" alt="" />
             <span className="ml-1 text-sm">ETH</span>
@@ -347,7 +347,7 @@ export function Swapper({ routes }: any) {
               tokenSwapper.tokenSwapper.buyToken?.address,
             ],
         account.address,
-        Math.floor(Date.now() / 1000) + 60 * 1000,
+        Math.floor(Date.now() / 1000) + 60 * 20,
       ],
     });
   };
@@ -367,7 +367,7 @@ export function Swapper({ routes }: any) {
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
   return (
-    <div className="p-6 w-full md:w-96 rounded-xl border border-neutral-700 bg-neutral-800 h-max grow shrink-0">
+    <div className="p-6 w-full xl:w-96 rounded-xl border border-neutral-700 bg-neutral-800 h-max grow shrink-0">
       <ul className="flex gap-4">
         <li className="text-white font-semibold cursor-pointer">Swap</li>
         <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">

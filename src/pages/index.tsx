@@ -32,8 +32,8 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="container mx-auto mt-12 md:px-0 px-4 mb-8">
-        <div className="flex md:flex-row flex-col gap-12">
+      <main className="container mx-auto mt-12 xl:px-0 px-4 mb-8">
+        <div className="flex xl:flex-row flex-col gap-12">
           <Swapper routes={routes} />
           <div className="grow">
             <div className="flex flex-col w-full">

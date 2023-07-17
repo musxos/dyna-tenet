@@ -2,9 +2,12 @@ import { Tokens } from "@/app/constant/tokens";
 import { LineChartComponent } from "@/components/chart/line-chart";
 import { Navbar } from "@/components/layout/navbar";
 import { Swapper } from "@/components/swapper";
+import { useFetchTX } from "@/hooks/useFetchTX";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { useMemo, useState } from "react";
 import { useContractRead, useContractWrite } from "wagmi";
+
+const NumberFormat = new Intl.NumberFormat("en-US");
 
 export default function Home() {
   const tokenSwapper = useTokenSwapper();
@@ -28,6 +31,10 @@ export default function Home() {
       ]);
     }
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
+
+  const tx = useFetchTX({
+    autoFetch: true,
+  });
 
   return (
     <>
@@ -104,10 +111,10 @@ export default function Home() {
                   <thead>
                     <tr className="text-left">
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Type
+                        Pair
                       </th>
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Price ({tokenSwapper.tokenSwapper.sellToken?.symbol})
+                        Price
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
@@ -115,7 +122,7 @@ export default function Home() {
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
-                        Amount ({tokenSwapper.tokenSwapper.buyToken?.symbol})
+                        Amount
                       </th>
 
                       <th className="text-white/80 text-xs font-semibold py-4 px-4">
@@ -128,38 +135,44 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        <div className="flex items-center gap-2">
-                          <div className="bg-green-300 w-max px-2 py-0.5 rounded text-black ">
-                            Buy
+                    {tx.tx.map((x, i) => (
+                      <tr key={i}>
+                        <td className="text-white text-sm font-semibold py-2 px-4 ">
+                          <div className="flex items-center gap-2">
+                            {x.pair}
                           </div>
-                        </div>
-                      </td>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        1869.34
-                      </td>
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        3.000
-                      </td>
+                        </td>
+                        <td className="text-white text-sm font-semibold py-2 px-4 ">
+                          {NumberFormat.format(x.result.Price)} {x.result.Asset}
+                        </td>
+                        <td className="text-white text-sm font-semibold py-2 px-4 ">
+                          {NumberFormat.format(x.result.Amount)}
+                        </td>
 
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        4.5
-                      </td>
+                        <td className="text-white text-sm font-semibold py-2 px-4 ">
+                          {NumberFormat.format(x.result.Amount)}{" "}
+                          {x.result.Asset}
+                        </td>
 
-                      <td className="text-white text-sm font-semibold py-2 px-4 ">
-                        1 minute ago
-                      </td>
+                        <td className="text-white text-sm font-semibold py-2 px-4 ">
+                          1 minute ago
+                        </td>
 
-                      <td className="text-white text-sm font-semibold py-2 px-4">
-                        <a
-                          href="google.com"
-                          className="text-blue-500 underline"
-                        >
-                          0x4b08...d2db
-                        </a>
-                      </td>
-                    </tr>
+                        <td className="text-white text-sm font-semibold py-2 px-4">
+                          <a
+                            target="_blank"
+                            href={
+                              "https://testnet.tenetscan.io/address/" + x.maker
+                            }
+                            className="text-blue-500 underline"
+                          >
+                            {x.maker.slice(0, 4) +
+                              "..." +
+                              x.maker.slice(x.maker.length - 4, x.maker.length)}
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

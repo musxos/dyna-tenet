@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Modal from "./modal";
-import { Pool } from "@/app/constant/pools";
 import { useGetAmountOut } from "@/hooks/useGetAmountOut";
 import { useApprove } from "@/hooks/useApprove";
 import config from "@/app/config";
 import { useAccount } from "wagmi";
 import { useAddLiquidity } from "@/hooks/useAddLiquidity";
+import { Pool } from "@/features/pool/pool.slice";
 
 export function useLiquid({ pool }: { pool: Pool }) {
   const account = useAccount();

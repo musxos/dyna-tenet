@@ -1,9 +1,11 @@
+import poolSlice from "@/features/pool/pool.slice";
 import tokenSwapperSlice from "@/features/token-swapper/token-swapper.slice";
 import { configureStore } from "@reduxjs/toolkit";
 
 export const store = configureStore({
   reducer: {
     tokenSwapper: tokenSwapperSlice,
+    pool: poolSlice,
   },
 });
 

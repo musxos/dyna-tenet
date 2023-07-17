@@ -106,9 +106,9 @@ export function Navbar() {
           <div className="flex flex-col mt-12 w-full">
             {buttons.map((button, i) => {
               return (
-                <button key={i} className="text-2xl py-2 text-left w-full">
+                <Link href={button.path} key={i} className="text-2xl py-2 text-left w-full">
                   {button.name}
-                </button>
+                </Link>
               );
             })}
           </div>

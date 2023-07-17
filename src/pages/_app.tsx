@@ -9,26 +9,48 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { polygon } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { tenetRPC } from "@/app/tenetRPC";
 
 const { chains, publicClient } = configureChains(
-  [tenetRPC, polygon],
+  [
+    {
+      id: 155,
+      name: "TENET",
+      network: "TENET",
+      iconUrl: "/wtenet.png",
+      nativeCurrency: {
+        decimals: 18,
+        name: "TENET",
+        symbol: "TENET",
+      },
+      rpcUrls: {
+        public: {
+          http: ["https://rpc.testnet.tenet.org"],
+        },
+        default: {
+          http: ["https://rpc.testnet.tenet.org"],
+        },
+      },
+      blockExplorers: {
+        etherscan: { name: "tenetscan", url: "https://testnet.tenetscan.io/" },
+        default: { name: "tenetscan", url: "https://testnet.tenetscan.io/" },
+      },
+    },
+  ],
   [
     jsonRpcProvider({
-      rpc: (chain) => ({
-        http: "https://rpc.testnet.tenet.org",
-        ws: "wss://rpc.testnet.tenet.org/ws",
-      }),
+      rpc: (chain) => {
+        return {
+          http: "https://rpc.testnet.tenet.org",
+          webSocket: "wss://rpc.testnet.tenet.org/ws",
+        };
+      },
     }),
-    alchemyProvider({ stallTimeout: 1000 }),
   ],
 );
 
 const { connectors } = getDefaultWallets({
-  appName: "My RainbowKit App",
-  projectId: "YOUR_PROJECT_ID",
+  appName: "DynaSwap",
+  projectId: "e0e56ad0a5922f3585d0a538850eb1c8",
   chains,
 });
 

@@ -20,7 +20,7 @@ export interface TokenSwapperState {
 const initialState: TokenSwapperState = {
   buyToken: Tokens[0],
   sellToken: Tokens[2],
-  amount: 0,
+  amount: 1,
   pairs: [],
 };
 

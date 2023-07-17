@@ -1,10 +1,11 @@
 import config from "@/app/config";
-import { Pool, PoolType, Pools } from "@/app/constant/pools";
 import { Navbar } from "@/components/layout/navbar";
 import { useLiquid } from "@/components/liquid-modal";
+import { Pool } from "@/features/pool/pool.slice";
 import { useApprove } from "@/hooks/useApprove";
 import { useBalanceOf } from "@/hooks/useBalanceOf";
 import { useGetReserves } from "@/hooks/useGetReserves";
+import { usePools } from "@/hooks/usePools";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
 import { useMemo, useState } from "react";
@@ -22,9 +23,9 @@ export function ListItem({ pool }: ListItemProps) {
     pool: pool,
   });
 
-  const totalSupply = useTotalSupply(pool.pool.pairAddress);
-  const balanceOf = useBalanceOf(pool.pool.pairAddress);
-  const reserves = useGetReserves(pool.pool.pairAddress);
+  const totalSupply = useTotalSupply(pool.pool.pairaddress);
+  const balanceOf = useBalanceOf(pool.pool.pairaddress);
+  const reserves = useGetReserves(pool.pool.pairaddress);
 
   const className = classNames(
     "col-span-6 h-full overflow-hidden transition-all border-gradient flex flex-col",
@@ -125,6 +126,10 @@ export function ListItem({ pool }: ListItemProps) {
 }
 
 export default function Pool() {
+  const pools = usePools({
+    autoFetch: true,
+  });
+
   return (
     <>
       <Navbar />
@@ -348,7 +353,7 @@ export default function Pool() {
               </div>
               <div>
                 <div className="flex flex-col gap-2 rounded">
-                  {Pools.map((pool, i) => (
+                  {pools.state.pools.map((pool, i) => (
                     <ListItem key={i} pool={pool} />
                   ))}
                 </div>

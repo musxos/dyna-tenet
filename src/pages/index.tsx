@@ -3,14 +3,74 @@ import { LineChartComponent } from "@/components/chart/line-chart";
 import { Navbar } from "@/components/layout/navbar";
 import { Swapper } from "@/components/swapper";
 import { useFetchTX } from "@/hooks/useFetchTX";
+import { usePair } from "@/hooks/usePair";
+import { usePools } from "@/hooks/usePools";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { useMemo, useState } from "react";
 import { useContractRead, useContractWrite } from "wagmi";
 
-const NumberFormat = new Intl.NumberFormat("en-US");
+const NumberFormat = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 6,
+  maximumSignificantDigits: 6,
+});
 
 export default function Home() {
   const tokenSwapper = useTokenSwapper();
+  const pools = usePools({
+    autoFetch: true,
+  });
+
+  const [price, setPrice] = useState<number>(0);
+
+  useMemo(() => {
+    const wTENET = Tokens.find(
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
+    );
+
+    const sellToken = tokenSwapper.tokenSwapper.sellToken;
+    const buyToken = tokenSwapper.tokenSwapper.buyToken;
+
+    if (pools.state.pools.length > 0) {
+      if (sellToken?.symbol == "wETH" || buyToken?.symbol == "wETH") {
+        const ethPool = pools.state.pools.find((x) => x.owner.symbol == "wETH");
+        let pool;
+
+        if (sellToken?.symbol != "wETH") {
+          pool = pools.state.pools.find(
+            (x) => x.target.address == sellToken?.address,
+          );
+
+          setPrice(pool!.target.price / ethPool!.owner.price);
+        } else if (buyToken?.symbol != "wETH") {
+          pool = pools.state.pools.find(
+            (x) => x.target.address == buyToken?.address,
+          );
+          setPrice(ethPool!.owner.price / pool!.target.price);
+        }
+
+        return;
+      }
+
+      const pool_1 = pools.state.pools.find(
+        (x) => x.target.address == sellToken?.address,
+      );
+      const pool_2 = pools.state.pools.find(
+        (x) => x.target.address == buyToken?.address,
+      );
+
+      if (!pool_1 || !pool_2) {
+        return;
+      }
+
+      console.log("price", pool_1?.target.price / pool_2?.target.price);
+
+      setPrice(pool_1?.target.price / pool_2?.target.price);
+    }
+  }, [
+    pools.state.pools,
+    tokenSwapper.tokenSwapper.sellToken,
+    tokenSwapper.tokenSwapper.buyToken,
+  ]);
 
   const [routes, setRoute] = useState<any[]>();
 
@@ -50,7 +110,7 @@ export default function Home() {
                   {tokenSwapper.tokenSwapper.sellToken?.symbol}
                 </span>
                 <span className="text-white text-2xl font-semibold">
-                  1869.34
+                  {NumberFormat.format(price)}
                   <span className="text-xs ml-2 text-red-500">
                     -4.41% (Past 3 days)
                   </span>

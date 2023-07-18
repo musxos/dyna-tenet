@@ -10,7 +10,10 @@ import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
 import { useMemo, useState } from "react";
 
-const NumberFormatter = new Intl.NumberFormat("en-US");
+const NumberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 6,
+  maximumSignificantDigits: 6,
+});
 
 export type ListItemProps = {
   pool: Pool;

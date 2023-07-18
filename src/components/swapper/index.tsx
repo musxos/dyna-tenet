@@ -11,7 +11,10 @@ import {
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
-const NumberFormatter = new Intl.NumberFormat("en-US");
+const NumberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 6,
+  maximumSignificantDigits: 6,
+});
 
 export enum SwapperChainButtonType {
   Sell,
@@ -228,7 +231,7 @@ export function Swapper({ routes }: any) {
           ],
     ],
     select: (data: any) => {
-      console.log(data);
+      console.log(Number(data[data.length - 1]) / 10 ** 18);
       return Number(data[data.length - 1]) / 10 ** 18;
     },
   });
@@ -405,7 +408,7 @@ export function Swapper({ routes }: any) {
           <span className="text-xs font-medium mb-2">Çekme</span>
           <div className="flex flex-col relative w-full">
             <input
-              value={NumberFormatter.format(getAmountOutContract.data || 0)}
+              value={NumberFormatter.format(getAmountOutContract.data)}
               disabled
               required
               className="rounded-xl px-4 text-lg py-4 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"

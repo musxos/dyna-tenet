@@ -14,6 +14,7 @@ export type TX = {
 
 export function useFetchTX({ autoFetch = true }) {
   const [tx, setTX] = useState<TX[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!autoFetch) {
@@ -24,15 +25,19 @@ export function useFetchTX({ autoFetch = true }) {
   }, []);
 
   async function fetchTX() {
+    setIsLoading(true);
+
     const response = await instance.get("/fetchtx");
 
     setTX(response.data);
+    setIsLoading(false);
 
     return response;
   }
 
   return {
     tx,
+    isLoading,
     setTX,
     fetchTX,
   };

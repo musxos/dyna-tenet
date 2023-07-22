@@ -82,7 +82,7 @@ export function Navbar() {
       <nav className="pt-6 xl:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
           <div className="font-semibold w-96">
-            <img className="w-32 lg:w-56" src="/logo.png" alt="" />
+            <img className="w-44 lg:w-56" src="/logo.png" alt="" />
           </div>
           <div className="ml-auto flex lg:bg-secondary rounded-[15px] lg:border border-[#E6E6E6] h-full">
             <NavbarButtonList buttons={buttons} />

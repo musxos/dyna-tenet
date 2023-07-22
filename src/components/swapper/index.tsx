@@ -58,7 +58,7 @@ export function SwapperChainListButton({
     {
       "opacity-50": isSelected,
       "hover:bg-gray-100": !isSelected,
-    },
+    }
   );
 
   return (
@@ -85,10 +85,10 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
       ? Tokens.filter(
           (x) =>
             x.address != tokenSwapper.tokenSwapper.buyToken?.address &&
-            x.address != tokenSwapper.tokenSwapper.sellToken?.address,
+            x.address != tokenSwapper.tokenSwapper.sellToken?.address
         )
       : Tokens.filter(
-          (x) => x.address != tokenSwapper.tokenSwapper.sellToken?.address,
+          (x) => x.address != tokenSwapper.tokenSwapper.sellToken?.address
         )
   ).map((token) => {
     return (
@@ -217,7 +217,7 @@ export function Swapper({ routes }: any) {
   const { openConnectModal } = useConnectModal();
 
   const wTENET = Tokens.find(
-    (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
+    (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
   );
 
   const getAmountOutContract = useContractRead({
@@ -442,10 +442,20 @@ export function Swapper({ routes }: any) {
           <span className="text-xs font-medium mb-2">Çekme</span>
           <div className="flex flex-col relative w-full">
             <input
-              value={NumberFormatter.format(getAmountOutContract.data as any)}
+              value={
+                getAmountOutContract.isError
+                  ? "Wrong input"
+                  : getAmountOutContract.isLoading
+                  ? "Loading..."
+                  : NumberFormatter.format(
+                      (getAmountOutContract.data as any) || 0
+                    )
+              }
               disabled
               required
-              className="rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition"
+              className={`rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition ${
+                getAmountOutContract.isLoading ? "opacity-50" : ""
+              }`}
               placeholder="0"
               type="text"
             />

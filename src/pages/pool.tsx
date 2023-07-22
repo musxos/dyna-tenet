@@ -31,7 +31,7 @@ export function ListItem({ pool }: ListItemProps) {
   const reserves = useGetReserves(pool.pool.pairaddress);
 
   const className = classNames(
-    "col-span-6 h-full overflow-hidden transition-all border-t  flex flex-col",
+    "col-span-6 overflow-hidden transition-all border-t flex flex-col",
     {
       "max-h-0 mt-0 border-transparent": !open,
       "max-h-[512px] mt-4 pt-4 border-[#D1D1D1]": open,
@@ -50,7 +50,7 @@ export function ListItem({ pool }: ListItemProps) {
       {liquid.modal}
       <div
         onClick={() => setOpen((v) => !v)}
-        className="grid grid-cols-6 bg-secondary border border-border py-4 rounded-custom active:scale-[.99] transition cursor-pointer"
+        className="grid grid-cols-6 bg-secondary border border-border py-4 rounded-custom active:scale-[.99] transition cursor-pointer h-full"
       >
         <div className="flex lg:flex-row flex-row-reverse items-center col-span-6 lg:col-span-2 pr-4 lg:pl-4">
           <div className="w-8 h-8 rounded-full border-2 border-transparent">

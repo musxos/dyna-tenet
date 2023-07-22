@@ -50,7 +50,7 @@ export function TableTokenItem({ token }: { token: Token }) {
             address: token.address,
             symbol: token.symbol,
             decimals: 18,
-            image: "http://localhost:3000" + token.image,
+            image: token.image,
           },
         },
       });
@@ -85,7 +85,7 @@ export function TableTokenItem({ token }: { token: Token }) {
 
       <div className="flex lg:block items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
         <h1 className="lg:hidden text-[#777] text-sm">Balance</h1>
-        <div className="flex items-center lg:flex-col">
+        <div className="flex items-center lg:items-baseline lg:flex-col">
           <h5 className="text-lg">
             {NumberFormatter.format(data || 0) || "-"}
           </h5>
@@ -96,16 +96,16 @@ export function TableTokenItem({ token }: { token: Token }) {
 
       <div className="flex lg:block items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
         <h1 className="lg:hidden text-[#777] text-sm">Value</h1>
-        <div className="flex items-center lg:flex-col">
+        <div className="flex items-center lg:items-baseline lg:flex-col">
           <h5 className="text-lg">0.0000</h5>
           <span className="text-lg lg:hidden mx-2">/</span>
           <h6 className="text-sm text-[#777]">$0.00</h6>
         </div>
       </div>
 
-      <div className="flex lg:block items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
+      <div className="flex lg:block lg:items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
         <h1 className="lg:hidden text-[#777] text-sm">Price</h1>
-        <div className="flex items-center lg:flex-col">
+        <div className="flex items-center lg:items-baseline lg:flex-col">
           <h5 className="text-lg">0.0000</h5>
           <span className="text-lg lg:hidden mx-2">/</span>
           <h6 className="text-sm text-[#777]">$0.00</h6>
@@ -114,7 +114,7 @@ export function TableTokenItem({ token }: { token: Token }) {
 
       <div className="flex lg:block items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
         <h1 className="lg:hidden text-[#777] text-sm">Change</h1>
-        <div className="flex items-center lg:flex-col">
+        <div className="flex flex-row items-center lg:items-baseline lg:flex-col">
           <h5 className="text-lg">0.00%</h5>
           <span className="text-lg lg:hidden mx-2">/</span>
           <h6 className="text-sm text-[#777]">$0.00</h6>
@@ -204,7 +204,7 @@ export default function Portfolio() {
           <div className="flex flex-col mt-8">
             <div className="w-full overflow-x-auto">
               <div className="w-full lg:min-w-[716px]">
-                <div className="grid-cols-6 lg:grid hidden">
+                <div className="grid-cols-6 lg:grid hidden px-6">
                   <th className="text-left text-[#777] pb-4 text-sm font-medium font-inter col-span-2">
                     Token
                   </th>

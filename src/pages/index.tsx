@@ -34,7 +34,7 @@ export default function Home() {
 
   useMemo(() => {
     const wTENET = Tokens.find(
-      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
     );
 
     const sellToken = tokenSwapper.tokenSwapper.sellToken;
@@ -47,13 +47,13 @@ export default function Home() {
 
         if (sellToken?.symbol != "wETH") {
           pool = pools.state.pools.find(
-            (x) => x.target.address == sellToken?.address,
+            (x) => x.target.address == sellToken?.address
           );
 
           setPrice(pool!.target.price / ethPool!.owner.price);
         } else if (buyToken?.symbol != "wETH") {
           pool = pools.state.pools.find(
-            (x) => x.target.address == buyToken?.address,
+            (x) => x.target.address == buyToken?.address
           );
           setPrice(ethPool!.owner.price / pool!.target.price);
         }
@@ -62,10 +62,10 @@ export default function Home() {
       }
 
       const pool_1 = pools.state.pools.find(
-        (x) => x.target.address == sellToken?.address,
+        (x) => x.target.address == sellToken?.address
       );
       const pool_2 = pools.state.pools.find(
-        (x) => x.target.address == buyToken?.address,
+        (x) => x.target.address == buyToken?.address
       );
 
       if (!pool_1 || !pool_2) {
@@ -86,7 +86,7 @@ export default function Home() {
 
   useMemo(() => {
     const wTENET = Tokens.find(
-      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
     );
 
     const sellToken = tokenSwapper.tokenSwapper.sellToken;
@@ -211,49 +211,76 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody>
-                      {tx.tx.map((x, i) => (
-                        <tr key={i}>
-                          <td className="font-semibold py-3 pr-4 ">
-                            <div className="flex items-center gap-2">
-                              {x.pair}
-                            </div>
-                          </td>
-                          <td className="font-semibold py-3 pr-4 ">
-                            {NumberFormat.format(x.result.Price)}{" "}
-                            {x.result.Asset}
-                          </td>
-                          <td className="font-semibold py-3 pr-4 ">
-                            {NumberFormat.format(x.result.Amount)}
-                          </td>
+                      {!tx.isLoading &&
+                        tx.tx.map((x, i) => (
+                          <tr key={i}>
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="flex items-center gap-2">
+                                {x.pair}
+                              </div>
+                            </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              {NumberFormat.format(x.result.Price)}{" "}
+                              {x.result.Asset}
+                            </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              {NumberFormat.format(x.result.Amount)}
+                            </td>
 
-                          <td className="font-semibold py-3 pr-4 ">
-                            {NumberFormat.format(x.result.Amount)}{" "}
-                            {x.result.Asset}
-                          </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              {NumberFormat.format(x.result.Amount)}{" "}
+                              {x.result.Asset}
+                            </td>
 
-                          <td className="font-semibold py-3 pr-4 ">
-                            1 minute ago
-                          </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              1 minute ago
+                            </td>
 
-                          <td className="font-semibold py-3 pr-4">
-                            <a
-                              target="_blank"
-                              href={
-                                "https://testnet.tenetscan.io/address/" +
-                                x.maker
-                              }
-                              className="text-blue-500 underline"
-                            >
-                              {x.maker.slice(0, 4) +
-                                "..." +
-                                x.maker.slice(
-                                  x.maker.length - 4,
-                                  x.maker.length,
-                                )}
-                            </a>
-                          </td>
-                        </tr>
-                      ))}
+                            <td className="font-semibold py-3 pr-4">
+                              <a
+                                target="_blank"
+                                href={
+                                  "https://testnet.tenetscan.io/address/" +
+                                  x.maker
+                                }
+                                className="text-blue-500 underline"
+                              >
+                                {x.maker.slice(0, 4) +
+                                  "..." +
+                                  x.maker.slice(
+                                    x.maker.length - 4,
+                                    x.maker.length
+                                  )}
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      {tx.isLoading &&
+                        new Array(10).fill(0).map((x, j) => (
+                          <tr key={j}>
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+
+                            <td className="font-semibold py-3 pr-4 ">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+
+                            <td className="font-semibold py-3 pr-4">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -330,13 +357,70 @@ export default function Home() {
                                 "..." +
                                 x.maker.slice(
                                   x.maker.length - 4,
-                                  x.maker.length,
+                                  x.maker.length
                                 )}
                             </a>
                           </span>
                         </div>
                       </div>
                     ))}
+                    {tx.isLoading &&
+                      new Array(10).fill(0).map((x, j) => (
+                        <div
+                          key={j}
+                          className="bg-secondary border border-border rounded-custom px-4 py-5 flex flex-col gap-3 text-sm"
+                        >
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              {" "}
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                          <div className="flex">
+                            <span className="text-[#777] font-medium w-32">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                            <span className="ml-12 font-medium">
+                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}

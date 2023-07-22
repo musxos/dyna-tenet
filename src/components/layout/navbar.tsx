@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { useOnClickOutside } from "usehooks-ts";
 import { useAccount } from "wagmi";
+import { ConnectButtonCustom } from "../custom-connect-button";
 
 interface NavbarButtonProps {
   name: string;
@@ -19,9 +20,12 @@ interface NavbarButtonListProps {
 
 export function NavbarButton({ name, path }: NavbarButtonProps) {
   return (
-    <li className="text-lg first:rounded-l last:rounded-r bg-neutral-800 hover:bg-neutral-700 px-6 py-2 h-12 flex items-center text-white/90 cursor-pointer active:scale-95 transition">
-      <Link href={path!}>{name}</Link>
-    </li>
+    <Link
+      href={path!}
+      className="text-[15px] hover:bg-border h-full flex items-center justify-center px-8 py-4 font-medium cursor-pointer active:scale-95 transition"
+    >
+      {name}
+    </Link>
   );
 }
 
@@ -35,7 +39,7 @@ export function NavbarButtonList({ buttons }: NavbarButtonListProps) {
     />
   ));
 
-  return <ul className="hidden items-center lg:flex">{listItems}</ul>;
+  return <div className="hidden lg:flex ml-7">{listItems}</div>;
 }
 
 export function NavbarConnectButton() {
@@ -44,7 +48,7 @@ export function NavbarConnectButton() {
   return (
     <button
       onClick={openConnectModal}
-      className="bg-neutral-800 hover:bg-neutral-700 h-12 px-6 rounded flex items-center justify-center cursor-pointer active:scale-95 transition"
+      className="bg-secondary hover:bg-neutral-700 h-12 px-6 rounded flex items-center justify-center cursor-pointer active:scale-95 transition"
     >
       Connect Wallet
     </button>
@@ -53,15 +57,16 @@ export function NavbarConnectButton() {
 
 export function Navbar() {
   const account = useAccount();
+  const { openConnectModal } = useConnectModal();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const sidebarRef = useRef(null);
 
   const sidebarClass = classNames(
-    "fixed bottom-0 top-0 left-0 h-screen inset-0 bg-black/50 z-50 transition-all",
+    "fixed bottom-0 top-0 left-0 h-screen inset-0 bg-black/20 z-50 transition-all",
     {
       "translate-x-0": sidebarOpen,
       "-translate-x-full": !sidebarOpen,
-    },
+    }
   );
 
   const buttons = [
@@ -74,42 +79,55 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="py-8 xl:px-0 px-4">
+      <nav className="pt-6 xl:px-0 px-4">
         <div className="container mx-auto flex justify-between items-center ">
           <div className="font-semibold w-96">
-            <img className="w-56" src="/logo.png" alt="" />
+            <img className="w-32 lg:w-56" src="/logo.png" alt="" />
           </div>
-          <NavbarButtonList buttons={buttons} />
-          <div className="lg:flex hidden justify-end items-center gap-4 w-96">
-            <div>
-              {account.isConnected && <ConnectButton />}
-              {!account.isConnected && <NavbarConnectButton />}
+          <div className="ml-auto flex lg:bg-secondary rounded-[15px] lg:border border-[#E6E6E6] h-full">
+            <NavbarButtonList buttons={buttons} />
+
+            <div className="ml-20 mr-2 items-center lg:flex hidden">
+              <ConnectButtonCustom />
             </div>
           </div>
           <button
             onClick={() => setSidebarOpen((v) => !v)}
-            className="lg:hidden w-10 h-10 rounded bg-neutral-800 flex items-center justify-center"
+            className="lg:hidden w-10 h-10 rounded bg-secondary flex  shrink-0 items-center justify-center"
           >
-            ...
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
+            </svg>
           </button>
         </div>
       </nav>
       <div className={sidebarClass}>
         <div
           ref={sidebarRef}
-          className="bg-neutral-800 w-2/3 h-full flex flex-col items-center py-4 px-4"
+          className="bg-secondary rounded-r-[12px] w-3/4 h-full flex flex-col items-center py-4 px-4"
         >
           <div className="font-semibold w-full">
-            <img className="w-56" src="/logo.png" alt="" />
+            <img className="w-44 lg:w-56 mx-auto" src="/logo.png" alt="" />
           </div>
 
-          <div className="flex flex-col mt-12 w-full">
+          <div className="flex flex-col gap-11 w-full mt-auto">
             {buttons.map((button, i) => {
               return (
                 <Link
                   href={button.path}
                   key={i}
-                  className="text-2xl py-2 text-left w-full"
+                  className="text-2xl text-center py-2 w-full"
                 >
                   {button.name}
                 </Link>
@@ -118,7 +136,7 @@ export function Navbar() {
           </div>
 
           <div className="mt-auto">
-            <ConnectButton />
+            <ConnectButtonCustom />
           </div>
         </div>
       </div>

@@ -58,14 +58,12 @@ export function useLiquid({ pool }: { pool: Pool }) {
 
   const modal = (
     <Modal
-      className="w-[32rem] bg-white shadow rounded-2xl py-5 relative"
+      className="w-[32rem] bg-white shadow rounded-2xl py-8 relative"
       open={modalOpen}
       setOpen={setModalOpen}
     >
-      <h1 className="px-5 text-xl text-black font-medium text-center mb-6">
-        Add Liquidity
-      </h1>
-      <div className="text-sm mx-5 rounded-lg mt-2 mb-6 px-4 py-2 text-violet-500 bg-violet-500/20">
+      <h1 className="px-6 text-xl font-medium mb-6">Add Liquidity</h1>
+      <div className="text-sm mx-5 rounded-lg mt-2 mb-6 px-6 py-4 text-violet-500 bg-[#E8DEFD]">
         <b>İpucu: </b>
         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor aliquid
         dolorum culpa delectus minus id quaerat illum assumenda quibusdam odio
@@ -92,37 +90,37 @@ export function useLiquid({ pool }: { pool: Pool }) {
         </svg>
       </button>
       <div className="flex flex-col gap-6 mt-3 px-5">
-        <div className="relative bg-gray-100 rounded-lg border border-transparent focus-within:border-violet-500 transition">
+        <div className="flex items-center justify-between relative rounded-lg border border-border focus-within:border-violet-500 transition">
           <input
             onChange={(e) => setAmount(Number(e.target.value))}
-            className="px-4 pt-2 pb-12 text-2xl bg-transparent text-black w-full outline-none"
+            className="px-4 py-4 text-2xl bg-transparent w-full outline-none"
             type="text"
           />
           <div
             className="
-            absolute top-2 right-2 flex flex-col gap-2
+            absolute right-2
           "
           >
-            <div className="flex items-center text-black px-3 py-1 rounded-lg shadow bg-gray-200">
+            <div className="flex items-center text-black px-4 py-2 rounded-lg bg-[#F3F4F6]">
               <img className="h-6 w-6" src={pool.owner.image} alt="" />
               <span className="ml-2">{pool.owner.symbol}</span>
             </div>
           </div>
         </div>
         <div className="text-xl text-black/50 text-center font-light">+</div>
-        <div className="relative bg-gray-100 rounded-lg border border-transparent focus-within:border-violet-500 transition">
+        <div className="flex items-center justify-between relative rounded-lg border border-border focus-within:border-violet-500 transition">
           <input
             value={getAmountOut.data || "0.00"}
-            className="px-4 pt-2 pb-12 text-2xl bg-transparent text-black w-full outline-none"
+            className="px-4 py-4 text-2xl bg-transparent text-black w-full outline-none"
             type="text"
             disabled
           />
           <div
             className="
-            absolute top-2 right-2 flex flex-col gap-2
+            absolute right-2
           "
           >
-            <div className="flex items-center text-black px-3 py-1 rounded-md shadow bg-gray-200">
+            <div className="flex items-center text-black px-4 py-2 rounded-lg bg-[#F3F4F6]">
               <img
                 className="h-6 w-6 rounded-full"
                 src={pool.target.image}
@@ -134,7 +132,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
         </div>
 
         {!account.isConnected && (
-          <button className="text-primary bg-primary/20 rounded-md py-4 font-semibold text-lg active:scale-95 transition">
+          <button className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition">
             Connect Your Wallet
           </button>
         )}
@@ -145,7 +143,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
               !targetTokenApprove.waitForTransaction.isSuccess && (
                 <button
                   onClick={handleOwnerApproveClick}
-                  className="text-primary bg-primary/20 rounded-md py-4 font-semibold text-lg active:scale-95 transition"
+                  className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition"
                 >
                   {ownerTokenApprove.waitForTransaction.isFetching
                     ? "Fetching..."
@@ -161,7 +159,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
               !targetTokenApprove.waitForTransaction.isSuccess && (
                 <button
                   onClick={handleTargetApproveClick}
-                  className="text-primary bg-primary/20 rounded-md py-4 font-semibold text-lg active:scale-95 transition"
+                  className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition"
                 >
                   {targetTokenApprove.waitForTransaction.isFetching
                     ? "Fetching..."
@@ -177,7 +175,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
               targetTokenApprove.waitForTransaction.isSuccess && (
                 <button
                   onClick={handleAddLiquidityClick}
-                  className="text-primary bg-primary/20 rounded-md py-4 font-semibold text-lg active:scale-95 transition"
+                  className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition"
                 >
                   {addLiquidity.waitForTransaction.isFetching
                     ? "Fetching..."

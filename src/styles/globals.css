@@ -6,7 +6,7 @@
 
 @layer base {
   body {
-    @apply bg-neutral-900 text-white overflow-x-hidden w-screen h-full;
+    @apply bg-[#f3f4f6] text-[#252525] overflow-x-hidden w-screen h-full;
     font-family: "Inter", sans-serif;
   }
 }
@@ -17,8 +17,4 @@
     border-image-slice: 1;
     border-image-source: linear-gradient(to left, #2d2e82, #3b82f6);
   }
-}
-
-nextjs-portal {
-  display: none;
 }

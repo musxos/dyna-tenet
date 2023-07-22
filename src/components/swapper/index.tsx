@@ -10,6 +10,7 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import classNames from "classnames";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -44,11 +45,24 @@ export function SwapperChainListButton({
     }
   };
 
+  const isSelected = useMemo(() => {
+    if (type == SwapperChainButtonType.Sell) {
+      return token.address == tokenSwapper.tokenSwapper.sellToken?.address;
+    } else {
+      return token.address == tokenSwapper.tokenSwapper.buyToken?.address;
+    }
+  }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
+
+  const buttonClass = classNames(
+    "flex items-center gap-3 mx-5 px-2 py-2 rounded-2xl text-left",
+    {
+      "opacity-50": isSelected,
+      "hover:bg-gray-100": !isSelected,
+    },
+  );
+
   return (
-    <button
-      onClick={handleClick}
-      className="flex items-center gap-3 mx-5 px-2 py-2 rounded-2xl text-left"
-    >
+    <button onClick={handleClick} className={buttonClass}>
       <img className="w-8 h-8 rounded-full" src={token.image} alt="" />
       <div className="flex flex-col">
         <h3 className="text-black/80">{token.symbol}</h3>
@@ -88,19 +102,37 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
   return (
     <>
       <Modal
-        className="w-[32rem] bg-white shadow rounded-2xl py-5"
+        className="w-[32rem] bg-white shadow rounded-2xl py-8"
         open={open}
         setOpen={setOpen}
       >
-        <h1 className="px-5 text-lg text-black font-medium">Select a token</h1>
-        <div className="mt-3 px-5">
-          <div className="flex items-center px-4 py-3 gap-3 bg-gray-200 rounded-2xl w-full">
+        <div className="flex justify-between px-6 ">
+          <h1 className="text-lg text-black font-medium">Select a token</h1>
+
+          <svg
+            onClick={() => setOpen(false)}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="#7E87A1"
+            className="w-5 h-5 cursor-pointer"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </div>
+        <div className="mt-6 px-6">
+          <div className="flex items-center px-4 py-3 gap-3 border border-[#C9C9C9] rounded-[12px] w-full">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
-              className="w-5 h-5 stroke-black"
+              className="w-5 h-5 stroke-[#777777]"
             >
               <path
                 strokeLinecap="round"
@@ -109,13 +141,13 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
               />
             </svg>
             <input
-              className="bg-transparent outline-none"
+              className="bg-transparent outline-none w-full h-full"
               placeholder="Search name or paste address"
               type="text"
             />
           </div>
         </div>
-        <div className="gap-2 mt-4 px-5 hidden">
+        <div className="gap-2 mt-4 px-6 hidden">
           <button className="flex items-center pl-2 pr-3 py-1 rounded-md bg-gray-100 text-black/50 active:scale-95 transition">
             <img className="w-6 h-6 rounded-full" src="/eth2.png" alt="" />
             <span className="ml-1 text-sm">ETH</span>
@@ -138,10 +170,10 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
       </Modal>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 right-3 top-1/2 -translate-y-1/2 absolute bg-white rounded-md px-2 py-1 active:scale-95 transition"
+        className="flex items-center gap-2 right-3 top-1/2 -translate-y-1/2 absolute bg-[#F3F4F6] rounded-[9px] px-2 py-2 active:scale-95 transition"
       >
         <img
-          className="w-8 h-8 rounded-full bg-neutral-800"
+          className="w-[22px] h-[22px] rounded-full bg-secondary"
           src={
             (props.type == SwapperChainButtonType.Buy
               ? tokenSwapper.tokenSwapper.buyToken
@@ -151,7 +183,7 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
           alt=""
         />
 
-        <span className="text-black font-inter font-medium">
+        <span className="text-black font-inter font-medium text-sm">
           {
             (props.type == SwapperChainButtonType.Buy
               ? tokenSwapper.tokenSwapper.buyToken
@@ -165,7 +197,7 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-4 h-4 stroke-black"
+          className="w-3 h-3 stroke-black"
         >
           <path
             strokeLinecap="round"
@@ -370,16 +402,18 @@ export function Swapper({ routes }: any) {
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
   return (
-    <div className="p-6 w-full xl:w-96 rounded-xl border border-neutral-700 bg-neutral-800 h-max grow shrink-0">
-      <ul className="flex gap-4">
-        <li className="text-white font-semibold cursor-pointer">Swap</li>
-        <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
+    <div className="px-6 py-8 w-full xl:w-96 rounded-custom border border-border bg-secondary h-max">
+      <ul className="flex text-xl w-full">
+        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
+          Swap
+        </li>
+        <li className="cursor-pointer grow border-b border-[#D1D1D1] pr-4 font-medium">
           Transfer
         </li>
-        <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
+        <li className="cursor-pointer grow border-b border-[#D1D1D1] pr-4 font-medium">
           Limit
         </li>
-        <li className="text-white/50 hover:text-white hover:font-semibold cursor-pointer">
+        <li className="cursor-pointer grow border-b border-[#D1D1D1] pr-4 font-medium">
           OTC
         </li>
       </ul>
@@ -397,7 +431,7 @@ export function Swapper({ routes }: any) {
                 tokenSwapper.setAmount(Number(e.target.value));
               }}
               required
-              className="rounded-xl px-4 text-lg py-4 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
+              className="rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition"
               placeholder="0"
               type="number"
             />
@@ -408,16 +442,20 @@ export function Swapper({ routes }: any) {
           <span className="text-xs font-medium mb-2">Çekme</span>
           <div className="flex flex-col relative w-full">
             <input
-              value={NumberFormatter.format(getAmountOutContract.data)}
+              value={NumberFormatter.format(getAmountOutContract.data as any)}
               disabled
               required
-              className="rounded-xl px-4 text-lg py-4 shadow bg-neutral-900 outline-none ring ring-transparent focus:ring-primary-light transition"
+              className="rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition"
               placeholder="0"
               type="text"
             />
             <SwapperChainButton type={SwapperChainButtonType.Buy} />
           </div>
         </div>
+        <div className="px-4 py-3 text-center w-full font-medium">
+          1 DYNA = 0.00000000 USD
+        </div>
+
         <div className="flex flex-col">
           {!account.isConnected && (
             <button
@@ -457,9 +495,6 @@ export function Swapper({ routes }: any) {
                 : "Swap"}
             </button>
           )}
-        </div>
-        <div className="flex px-4 py-3 border rounded border-neutral-700 bg-neutral-700/20">
-          1 DYNA = 0.00000000 USD
         </div>
       </div>
     </div>

@@ -17,7 +17,7 @@ export const Tokens = [
     name: "wTENET",
     symbol: "wTENET",
     address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
-    image: "./wTENET.png",
+    image: "/wtenet.png",
     pairs: [
       "0xAA182427aE4F92b91d7210c609aCa6e6B54C8d8e",
       "0xEf334F07FBFCa2c9d2b09938d66263811AD826Ec",

@@ -36,7 +36,7 @@ export const ConnectButtonCustom = () => {
               if (!connected) {
                 return (
                   <button
-                    className="rounded-[11px] bg-primary px-5 py-3 my-2 text-white font-medium text-base"
+                    className="rounded-[11px] bg-primary px-5 py-3 my-2 text-white font-medium text-sm"
                     onClick={openConnectModal}
                     type="button"
                   >

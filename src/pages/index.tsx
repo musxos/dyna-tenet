@@ -34,7 +34,7 @@ export default function Home() {
 
   useMemo(() => {
     const wTENET = Tokens.find(
-      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     );
 
     const sellToken = tokenSwapper.tokenSwapper.sellToken;
@@ -47,13 +47,13 @@ export default function Home() {
 
         if (sellToken?.symbol != "wETH") {
           pool = pools.state.pools.find(
-            (x) => x.target.address == sellToken?.address
+            (x) => x.target.address == sellToken?.address,
           );
 
           setPrice(pool!.target.price / ethPool!.owner.price);
         } else if (buyToken?.symbol != "wETH") {
           pool = pools.state.pools.find(
-            (x) => x.target.address == buyToken?.address
+            (x) => x.target.address == buyToken?.address,
           );
           setPrice(ethPool!.owner.price / pool!.target.price);
         }
@@ -62,10 +62,10 @@ export default function Home() {
       }
 
       const pool_1 = pools.state.pools.find(
-        (x) => x.target.address == sellToken?.address
+        (x) => x.target.address == sellToken?.address,
       );
       const pool_2 = pools.state.pools.find(
-        (x) => x.target.address == buyToken?.address
+        (x) => x.target.address == buyToken?.address,
       );
 
       if (!pool_1 || !pool_2) {
@@ -86,7 +86,7 @@ export default function Home() {
 
   useMemo(() => {
     const wTENET = Tokens.find(
-      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
+      (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     );
 
     const sellToken = tokenSwapper.tokenSwapper.sellToken;
@@ -110,42 +110,13 @@ export default function Home() {
     <>
       <Navbar />
       <main className="container mx-auto mt-12 xl:px-0 px-4 mb-8">
-        <div className="flex xl:flex-row flex-col gap-3">
-          <div className="flex flex-col grow shrink-0">
-            <Swapper routes={routes} />
-            <div className="mt-3 rounded-custom bg-secondary border border-border px-6 py-8">
-              <div className="text-center font-medium text-xl">Trade Route</div>
-              <div className="mt-12 flex flex-col gap-4">
-                {routes?.map((route, i) => {
-                  const sellToken = route[0];
-                  const buyToken = route[1];
-
-                  return (
-                    <div key={i} className="flex items-center">
-                      <img
-                        className="w-8 h-8 rounded-full bg-secondary"
-                        src={sellToken.image}
-                        alt=""
-                      />
-                      <div className="grow border-b-4 border-border border-dotted relative">
-                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium">
-                          {tokenSwapper.tokenSwapper.amount} {sellToken.symbol}
-                        </div>
-                      </div>
-                      <img
-                        className="w-8 h-8 rounded-full bg-secondary"
-                        src={buyToken.image}
-                        alt=""
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex lg:flex-row flex-col gap-3">
+            <div className="flex flex-col grow shrink-0 h-full">
+              <Swapper routes={routes} />
             </div>
-          </div>
-          <div className="grow">
-            <div className="flex flex-col w-full">
-              <div className="bg-secondary border border-border flex flex-col rounded-custom p-6">
+            <div className="grow">
+              <div className="bg-secondary border border-border h-full flex flex-col rounded-custom p-6">
                 <div className="flex lg:flex-row flex-col justify-between items-end">
                   <div className="flex flex-nowrap flex-col mb-2 mr-auto">
                     <span className="text-sm text-[#777] font-medium">
@@ -177,254 +148,272 @@ export default function Home() {
                   <LineChartComponent></LineChartComponent>
                 </div>
               </div>
-              {clientWidth > 1024 && (
-                <div className="mt-8 rounded-custom border border-border bg-secondary overflow-x-auto px-6 py-8">
-                  <h1 className="font-medium text-xl mb-6">
-                    Last transactions
-                  </h1>
+            </div>
+          </div>
+          <div className="flex lg:flex-row flex-col gap-3">
+            <div className="rounded-custom bg-secondary border border-border px-6 py-8 w-full xl:w-96 grow shrink-0 h-max">
+              <div className="text-center font-medium text-xl">Trade Route</div>
+              <div className="mt-12 flex flex-col gap-4">
+                {routes?.map((route, i) => {
+                  const sellToken = route[0];
+                  const buyToken = route[1];
 
-                  <table className="table-fixed min-w-[1024px] w-full">
-                    <thead>
-                      <tr className="text-left text-[#777]">
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Pair
-                        </th>
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Price
-                        </th>
-
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Total
-                        </th>
-
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Amount
-                        </th>
-
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Update
-                        </th>
-
-                        <th className=" text-xs font-semibold py-4 pr-4">
-                          Maker
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {!tx.isLoading &&
-                        tx.tx.map((x, i) => (
-                          <tr key={i}>
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="flex items-center gap-2">
-                                {x.pair}
-                              </div>
-                            </td>
-                            <td className="font-semibold py-3 pr-4 ">
-                              {NumberFormat.format(x.result.Price)}{" "}
-                              {x.result.Asset}
-                            </td>
-                            <td className="font-semibold py-3 pr-4 ">
-                              {NumberFormat.format(x.result.Amount)}
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4 ">
-                              {NumberFormat.format(x.result.Amount)}{" "}
-                              {x.result.Asset}
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4 ">
-                              1 minute ago
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4">
-                              <a
-                                target="_blank"
-                                href={
-                                  "https://testnet.tenetscan.io/address/" +
-                                  x.maker
-                                }
-                                className="text-blue-500 underline"
-                              >
-                                {x.maker.slice(0, 4) +
-                                  "..." +
-                                  x.maker.slice(
-                                    x.maker.length - 4,
-                                    x.maker.length
-                                  )}
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      {tx.isLoading &&
-                        new Array(10).fill(0).map((x, j) => (
-                          <tr key={j}>
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4 ">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-
-                            <td className="font-semibold py-3 pr-4">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-              {clientWidth < 1024 && (
-                <div className="mt-8">
-                  <h1 className="font-medium text-xl mb-6">
-                    Last transactions
-                  </h1>
-
-                  <div className="grid grid-cols-1 gap-3">
-                    {tx.tx.map((x, i) => (
-                      <div
-                        key={i}
-                        className="bg-secondary border border-border rounded-custom px-4 py-5 flex flex-col gap-3 text-sm"
-                      >
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Pair
-                          </span>
-                          <span className="ml-12 font-medium"> {x.pair}</span>
+                  return (
+                    <div key={i} className="flex items-center">
+                      <img
+                        className="w-8 h-8 rounded-full bg-secondary"
+                        src={sellToken.image}
+                        alt=""
+                      />
+                      <div className="grow border-b-4 border-border border-dotted relative">
+                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium">
+                          {tokenSwapper.tokenSwapper.amount} {sellToken.symbol}
                         </div>
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Price
-                          </span>
-                          <span className="ml-12 font-medium">
-                            {" "}
+                      </div>
+                      <img
+                        className="w-8 h-8 rounded-full bg-secondary"
+                        src={buyToken.image}
+                        alt=""
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {clientWidth > 1024 && (
+              <div className="rounded-custom border border-border bg-secondary overflow-x-auto px-6 py-8">
+                <h1 className="font-medium text-xl mb-6">Last transactions</h1>
+
+                <table className="table-fixed min-w-[1024px] w-full">
+                  <thead>
+                    <tr className="text-left text-[#777]">
+                      <th className=" text-xs font-semibold py-4 pr-4">Pair</th>
+                      <th className=" text-xs font-semibold py-4 pr-4">
+                        Price
+                      </th>
+
+                      <th className=" text-xs font-semibold py-4 pr-4">
+                        Total
+                      </th>
+
+                      <th className=" text-xs font-semibold py-4 pr-4">
+                        Amount
+                      </th>
+
+                      <th className=" text-xs font-semibold py-4 pr-4">
+                        Update
+                      </th>
+
+                      <th className=" text-xs font-semibold py-4 pr-4">
+                        Maker
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!tx.isLoading &&
+                      tx.tx.map((x, i) => (
+                        <tr key={i}>
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="flex items-center gap-2">
+                              {x.pair}
+                            </div>
+                          </td>
+                          <td className="font-semibold py-3 pr-4 ">
                             {NumberFormat.format(x.result.Price)}{" "}
                             {x.result.Asset}
-                          </span>
-                        </div>
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Total
-                          </span>
-                          <span className="ml-12 font-medium">
-                            {" "}
+                          </td>
+                          <td className="font-semibold py-3 pr-4 ">
                             {NumberFormat.format(x.result.Amount)}
-                          </span>
-                        </div>
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Amount
-                          </span>
-                          <span className="ml-12 font-medium">
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4 ">
                             {NumberFormat.format(x.result.Amount)}{" "}
                             {x.result.Asset}
-                          </span>
-                        </div>
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Update
-                          </span>
-                          <span className="ml-12 font-medium">
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4 ">
                             1 minute ago
-                          </span>
-                        </div>
-                        <div className="flex">
-                          <span className="text-[#777] font-medium w-32">
-                            Maker
-                          </span>
-                          <span className="ml-12 font-medium">
-                            {" "}
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4">
                             <a
                               target="_blank"
                               href={
                                 "https://testnet.tenetscan.io/address/" +
                                 x.maker
                               }
-                              className="text-primary underline"
+                              className="text-blue-500 underline"
                             >
-                              {x.maker.slice(0, 6) +
+                              {x.maker.slice(0, 4) +
                                 "..." +
                                 x.maker.slice(
                                   x.maker.length - 4,
-                                  x.maker.length
+                                  x.maker.length,
                                 )}
                             </a>
+                          </td>
+                        </tr>
+                      ))}
+                    {tx.isLoading &&
+                      new Array(10).fill(0).map((x, j) => (
+                        <tr key={j}>
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4 ">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+
+                          <td className="font-semibold py-3 pr-4">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {clientWidth < 1024 && (
+              <div className="mt-8">
+                <h1 className="font-medium text-xl mb-6">Last transactions</h1>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {tx.tx.map((x, i) => (
+                    <div
+                      key={i}
+                      className="bg-secondary border border-border rounded-custom px-4 py-5 flex flex-col gap-3 text-sm"
+                    >
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Pair
+                        </span>
+                        <span className="ml-12 font-medium"> {x.pair}</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Price
+                        </span>
+                        <span className="ml-12 font-medium">
+                          {" "}
+                          {NumberFormat.format(x.result.Price)} {x.result.Asset}
+                        </span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Total
+                        </span>
+                        <span className="ml-12 font-medium">
+                          {" "}
+                          {NumberFormat.format(x.result.Amount)}
+                        </span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Amount
+                        </span>
+                        <span className="ml-12 font-medium">
+                          {NumberFormat.format(x.result.Amount)}{" "}
+                          {x.result.Asset}
+                        </span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Update
+                        </span>
+                        <span className="ml-12 font-medium">1 minute ago</span>
+                      </div>
+                      <div className="flex">
+                        <span className="text-[#777] font-medium w-32">
+                          Maker
+                        </span>
+                        <span className="ml-12 font-medium">
+                          {" "}
+                          <a
+                            target="_blank"
+                            href={
+                              "https://testnet.tenetscan.io/address/" + x.maker
+                            }
+                            className="text-primary underline"
+                          >
+                            {x.maker.slice(0, 6) +
+                              "..." +
+                              x.maker.slice(x.maker.length - 4, x.maker.length)}
+                          </a>
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                  {tx.isLoading &&
+                    new Array(10).fill(0).map((x, j) => (
+                      <div
+                        key={j}
+                        className="bg-secondary border border-border rounded-custom px-4 py-5 flex flex-col gap-3 text-sm"
+                      >
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            {" "}
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-[#777] font-medium w-32">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
+                          </span>
+                          <span className="ml-12 font-medium">
+                            <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
                           </span>
                         </div>
                       </div>
                     ))}
-                    {tx.isLoading &&
-                      new Array(10).fill(0).map((x, j) => (
-                        <div
-                          key={j}
-                          className="bg-secondary border border-border rounded-custom px-4 py-5 flex flex-col gap-3 text-sm"
-                        >
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              {" "}
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                          <div className="flex">
-                            <span className="text-[#777] font-medium w-32">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                            <span className="ml-12 font-medium">
-                              <div className="w-24 h-2 rounded-full animate-pulse bg-[#777]" />
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

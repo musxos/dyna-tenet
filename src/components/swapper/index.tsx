@@ -58,7 +58,7 @@ export function SwapperChainListButton({
     {
       "opacity-50": isSelected,
       "hover:bg-gray-100": !isSelected,
-    }
+    },
   );
 
   return (
@@ -85,10 +85,10 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
       ? Tokens.filter(
           (x) =>
             x.address != tokenSwapper.tokenSwapper.buyToken?.address &&
-            x.address != tokenSwapper.tokenSwapper.sellToken?.address
+            x.address != tokenSwapper.tokenSwapper.sellToken?.address,
         )
       : Tokens.filter(
-          (x) => x.address != tokenSwapper.tokenSwapper.sellToken?.address
+          (x) => x.address != tokenSwapper.tokenSwapper.sellToken?.address,
         )
   ).map((token) => {
     return (
@@ -217,7 +217,7 @@ export function Swapper({ routes }: any) {
   const { openConnectModal } = useConnectModal();
 
   const wTENET = Tokens.find(
-    (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"
+    (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
   );
 
   const getAmountOutContract = useContractRead({
@@ -448,7 +448,7 @@ export function Swapper({ routes }: any) {
                   : getAmountOutContract.isLoading
                   ? "Loading..."
                   : NumberFormatter.format(
-                      (getAmountOutContract.data as any) || 0
+                      (getAmountOutContract.data as any) || 0,
                     )
               }
               disabled
@@ -470,7 +470,7 @@ export function Swapper({ routes }: any) {
           {!account.isConnected && (
             <button
               onClick={openConnectModal}
-              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+              className="rounded-xl px-4 text-base py-4 mt-2 shadow bg-primary text-white font-medium hover:bg-primary-light active:scale-95 transition"
             >
               Connect Wallet
             </button>

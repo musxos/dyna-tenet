@@ -90,7 +90,7 @@ export const ConnectButtonCustom = () => {
                         {chain.iconUrl && (
                           <img
                             alt={chain.name ?? "Chain icon"}
-                            src={chain.iconUrl}
+                            src="https://dynaswap.net/docs/wTENET.png"
                           />
                         )}
                       </div>

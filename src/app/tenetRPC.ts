@@ -2,7 +2,7 @@ export const tenetRPC = {
   id: 155,
   name: "TENET",
   network: "TENET",
-  iconUrl: "/wTENET.png",
+  iconUrl: "https://dynaswap.net/docs/wTENET.png",
   nativeCurrency: {
     decimals: 18,
     name: "TENET",

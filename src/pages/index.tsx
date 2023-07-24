@@ -19,6 +19,7 @@ export default function Home() {
   const pools = usePools({
     autoFetch: true,
   });
+  const now = new Date();
 
   const [clientWidth, setClientWidth] = useState<number>(0);
 
@@ -232,7 +233,7 @@ export default function Home() {
                           </td>
 
                           <td className="font-semibold py-3 pr-4 ">
-                            1 minute ago
+                            {Math.floor((now - x.result.date) / 60)} minute ago
                           </td>
 
                           <td className="font-semibold py-3 pr-4">

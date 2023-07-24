@@ -419,7 +419,7 @@ export function Swapper({ routes }: any) {
       </ul>
       <div className="flex flex-col mt-6 gap-6">
         <div className="flex flex-col">
-          <span className="text-xs font-medium mb-2">Ödeme</span>
+          <span className="text-xs font-medium mb-2">Out</span>
           <div className="flex flex-col relative w-full">
             <input
               value={tokenSwapper.tokenSwapper.amount}
@@ -439,7 +439,7 @@ export function Swapper({ routes }: any) {
           </div>
         </div>
         <div className="flex flex-col">
-          <span className="text-xs font-medium mb-2">Çekme</span>
+          <span className="text-xs font-medium mb-2">In</span>
           <div className="flex flex-col relative w-full">
             <input
               value={
@@ -462,10 +462,7 @@ export function Swapper({ routes }: any) {
             <SwapperChainButton type={SwapperChainButtonType.Buy} />
           </div>
         </div>
-        <div className="px-4 py-3 text-center w-full font-medium">
-          1 DYNA = 0.00000000 USD
-        </div>
-
+      
         <div className="flex flex-col">
           {!account.isConnected && (
             <button

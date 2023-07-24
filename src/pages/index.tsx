@@ -232,7 +232,7 @@ export default function Home() {
                           </td>
 
                           <td className="font-semibold py-3 pr-4 ">
-                            { x.date) } minute ago
+                            {x.date} minute ago
                           </td>
 
                           <td className="font-semibold py-3 pr-4">

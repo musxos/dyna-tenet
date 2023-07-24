@@ -112,7 +112,7 @@ export default function Home() {
       <main className="container mx-auto mt-12 xl:px-0 px-4 mb-8">
         <div className="flex flex-col gap-3">
           <div className="flex lg:flex-row flex-col gap-3">
-            <div className="flex flex-col grow shrink-0 h-full">
+            <div className="flex flex-col grow shrink-0">
               <Swapper routes={routes} />
             </div>
             <div className="grow">
@@ -151,37 +151,42 @@ export default function Home() {
             </div>
           </div>
           <div className="flex lg:flex-row flex-col gap-3">
-            <div className="rounded-custom bg-secondary border border-border px-6 py-8 w-full xl:w-96 grow shrink-0 h-max">
-              <div className="text-center font-medium text-xl">Trade Route</div>
-              <div className="mt-12 flex flex-col gap-4">
-                {routes?.map((route, i) => {
-                  const sellToken = route[0];
-                  const buyToken = route[1];
+            <div className="flex flex-col grow shrink-0 h-max">
+              <div className="rounded-custom bg-secondary border border-border px-6 py-8 w-full xl:w-96 h-max">
+                <div className="text-center font-medium text-xl">
+                  Trade Route
+                </div>
+                <div className="mt-12 flex flex-col gap-4">
+                  {routes?.map((route, i) => {
+                    const sellToken = route[0];
+                    const buyToken = route[1];
 
-                  return (
-                    <div key={i} className="flex items-center">
-                      <img
-                        className="w-8 h-8 rounded-full bg-secondary"
-                        src={sellToken.image}
-                        alt=""
-                      />
-                      <div className="grow border-b-4 border-border border-dotted relative">
-                        <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium">
-                          {tokenSwapper.tokenSwapper.amount} {sellToken.symbol}
+                    return (
+                      <div key={i} className="flex items-center">
+                        <img
+                          className="w-8 h-8 rounded-full bg-secondary"
+                          src={sellToken.image}
+                          alt=""
+                        />
+                        <div className="grow border-b-4 border-border border-dotted relative">
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium">
+                            {tokenSwapper.tokenSwapper.amount}{" "}
+                            {sellToken.symbol}
+                          </div>
                         </div>
+                        <img
+                          className="w-8 h-8 rounded-full bg-secondary"
+                          src={buyToken.image}
+                          alt=""
+                        />
                       </div>
-                      <img
-                        className="w-8 h-8 rounded-full bg-secondary"
-                        src={buyToken.image}
-                        alt=""
-                      />
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
             {clientWidth > 1024 && (
-              <div className="rounded-custom border border-border bg-secondary overflow-x-auto px-6 py-8">
+              <div className="rounded-custom border border-border bg-secondary overflow-x-auto px-6 py-8 grow">
                 <h1 className="font-medium text-xl mb-6">Last transactions</h1>
 
                 <table className="table-fixed min-w-[1024px] w-full">
@@ -200,9 +205,7 @@ export default function Home() {
                         Amount
                       </th>
 
-                      <th className=" text-xs font-semibold py-4 pr-4">
-                        Time
-                      </th>
+                      <th className=" text-xs font-semibold py-4 pr-4">Time</th>
 
                       <th className=" text-xs font-semibold py-4 pr-4">
                         Maker
@@ -232,7 +235,7 @@ export default function Home() {
                           </td>
 
                           <td className="font-semibold py-3 pr-4 ">
-                            in 1 minute 
+                            in 1 minute
                           </td>
 
                           <td className="font-semibold py-3 pr-4">

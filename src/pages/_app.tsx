@@ -16,7 +16,7 @@ const { chains, publicClient } = configureChains(
       id: 155,
       name: "TENET",
       network: "TENET",
-      iconUrl: "/wtenet.png",
+      iconUrl: "https://dynaswap.net/docs/wTENET.png",
       nativeCurrency: {
         decimals: 18,
         name: "TENET",

@@ -6,10 +6,12 @@ import config from "@/app/config";
 import { useAccount } from "wagmi";
 import { useAddLiquidity } from "@/hooks/useAddLiquidity";
 import { Pool } from "@/features/pool/pool.slice";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export function useLiquid({ pool }: { pool: Pool }) {
   const account = useAccount();
 
+  const { openConnectModal } = useConnectModal();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [amount, setAmount] = useState<number>(0);
   const getAmountOut = useGetAmountOut({
@@ -132,7 +134,10 @@ export function useLiquid({ pool }: { pool: Pool }) {
         </div>
 
         {!account.isConnected && (
-          <button className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition">
+          <button
+            onClick={openConnectModal}
+            className="text-white bg-primary rounded-md py-4 font-medium active:scale-95 transition"
+          >
             Connect Your Wallet
           </button>
         )}

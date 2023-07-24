@@ -42,6 +42,7 @@ export function TableTokenItem({ token }: { token: Token }) {
 
   const addTokenToMetamask = async () => {
     try {
+      console.log(token);
       await (window as any).ethereum.request({
         method: "wallet_watchAsset",
         params: {
@@ -50,7 +51,7 @@ export function TableTokenItem({ token }: { token: Token }) {
             address: token.address,
             symbol: token.symbol,
             decimals: 18,
-            image: token.image,
+            image: (window as any).location.origin + token.image,
           },
         },
       });

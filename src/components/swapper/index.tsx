@@ -402,7 +402,7 @@ export function Swapper({ routes }: any) {
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
   return (
-    <div className="px-6 py-8 w-full xl:w-96 rounded-custom border border-border bg-secondary h-max">
+    <div className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full">
       <ul className="flex text-xl w-full">
         <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
           Swap
@@ -417,7 +417,7 @@ export function Swapper({ routes }: any) {
           OTC
         </li>
       </ul>
-      <div className="flex flex-col mt-6 gap-6">
+      <div className="flex flex-col mt-6 gap-6 h-full">
         <div className="flex flex-col">
           <span className="text-xs font-medium mb-2">Out</span>
           <div className="flex flex-col relative w-full">
@@ -462,8 +462,8 @@ export function Swapper({ routes }: any) {
             <SwapperChainButton type={SwapperChainButtonType.Buy} />
           </div>
         </div>
-      
-        <div className="flex flex-col">
+
+        <div className="flex flex-col mt-auto">
           {!account.isConnected && (
             <button
               onClick={openConnectModal}

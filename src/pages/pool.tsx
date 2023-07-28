@@ -152,7 +152,7 @@ export default function Pool() {
             <div className="flex flex-col bg-secondary border border-border rounded-custom w-full py-8 px-6">
               <div className="flex justify-between">
                 <div className="flex flex-col">
-                  <h2 className="text-lg font-inter font-medium">wTENET / DYNA</h2>
+                  <h2 className="text-lg font-inter font-medium">USDT / ETH</h2>
                   <div className="text-primary flex items-center mt-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -173,12 +173,12 @@ export default function Pool() {
                 </div>
                 <div className="flex">
                   <div className="w-8 h-8 border border-transparent rounded-full">
-                    <img className=" rounded-full" src="/wTenet.png" alt="" />
+                    <img className=" rounded-full" src="/usdt.webp" alt="" />
                   </div>
                   <div className="w-8 h-8 rounded-full border-2 border-white -ml-2">
                     <img
                       className="w-full h-full rounded-full"
-                      src="/DYNA.png"
+                      src="/wETH.png"
                       alt=""
                     />
                   </div>

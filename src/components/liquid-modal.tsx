@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Modal from "./modal";
 import { useGetAmountOut } from "@/hooks/useGetAmountOut";
 import { useApprove } from "@/hooks/useApprove";
@@ -7,9 +7,12 @@ import { useAccount } from "wagmi";
 import { useAddLiquidity } from "@/hooks/useAddLiquidity";
 import { Pool } from "@/features/pool/pool.slice";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { NumberInput } from "intl-number-input";
 
 export function useLiquid({ pool }: { pool: Pool }) {
   const account = useAccount();
+
+  const inputRef = useRef<any>(null);
 
   const { openConnectModal } = useConnectModal();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -18,6 +21,18 @@ export function useLiquid({ pool }: { pool: Pool }) {
     amount,
     path: [pool.owner.address, pool.target.address],
   });
+
+  useEffect(() => {
+    if (inputRef.current == null || modalOpen == false) return;
+
+    const numberInput = new NumberInput({
+      el: inputRef.current,
+      options: {},
+      onInput(value) {
+        setAmount(value.number || 0);
+      },
+    });
+  }, [inputRef.current, modalOpen]);
 
   const ownerTokenApprove = useApprove(pool.owner.address);
   const targetTokenApprove = useApprove(pool.target.address);
@@ -66,11 +81,11 @@ export function useLiquid({ pool }: { pool: Pool }) {
     >
       <h1 className="px-6 text-xl font-medium mb-6">Add Liquidity</h1>
       <div className="text-sm mx-5 rounded-lg mt-2 mb-6 px-6 py-4 text-violet-500 bg-[#E8DEFD]">
-        <b>İpucu: </b>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolor aliquid
-        dolorum culpa delectus minus id quaerat illum assumenda quibusdam odio
-        non veniam exercitationem molestias, porro, deserunt, voluptate placeat
-        est enim.
+        <b>Yield Farming: </b>
+        
+        Yield Farming allows you to earn passive income by investing in DeFi protocols. 
+        However, liquidity providers may experience "impermanent loss" due to price fluctuations of tokens. 
+        It's important to invest carefully, considering this risk.
       </div>
       <button
         onClick={() => setModalOpen(false)}
@@ -94,7 +109,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
       <div className="flex flex-col gap-6 mt-3 px-5">
         <div className="flex items-center justify-between relative rounded-lg border border-border focus-within:border-violet-500 transition">
           <input
-            onChange={(e) => setAmount(Number(e.target.value))}
+            ref={inputRef}
             className="px-4 py-4 text-2xl bg-transparent w-full outline-none"
             type="text"
           />

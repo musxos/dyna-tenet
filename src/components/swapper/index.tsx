@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Modal from "../modal";
 import { Tokens } from "@/app/constant/tokens";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
@@ -11,6 +11,8 @@ import {
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
+
+import { NumberInput } from "intl-number-input";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -212,6 +214,17 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
 
 export function Swapper({ routes }: any) {
   const tokenSwapper = useTokenSwapper();
+  const sellInputRef = useRef<any>(null);
+
+  useEffect(() => {
+    const numberInput = new NumberInput({
+      el: sellInputRef.current as any,
+      options: {},
+      onInput(value) {
+        tokenSwapper.setAmount(Number(value.number));
+      },
+    });
+  }, []);
 
   const account = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -422,18 +435,11 @@ export function Swapper({ routes }: any) {
           <span className="text-xs font-medium mb-2">Out</span>
           <div className="flex flex-col relative w-full">
             <input
-              value={tokenSwapper.tokenSwapper.amount}
-              onChange={(e) => {
-                if (isNaN(Number(e.target.value))) {
-                  return;
-                }
-
-                tokenSwapper.setAmount(Number(e.target.value));
-              }}
+              ref={sellInputRef}
               required
               className="rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition"
               placeholder="0"
-              type="number"
+              type="text"
             />
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
           </div>

@@ -2796,6 +2796,11 @@ internal-slot@^1.0.3, internal-slot@^1.0.5:
   resolved "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz"
   integrity sha512-5Hh7Y1wQbvY5ooGgPbDaL5iYLAPzMTUrjMulskHLH6wnv/A+1q5rgEaiuqEjB+oxGXIVZs1FF+R/KPN3ZSQYYg==
 
+intl-number-input@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/intl-number-input/-/intl-number-input-1.4.0.tgz#b327470c6e6cf48304e5df39bd0b7d2a92e78029"
+  integrity sha512-a1lS+Qy0SWnc6+dtE8fsPmQ0pD0WkjjpvrPgn1wCDp1ynOseVJ00sldS7Xj6XF1FGHgntJdyOaNkQrnGzdwRWA==
+
 invariant@^2.2.4:
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"

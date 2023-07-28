@@ -224,6 +224,8 @@ export function Swapper({ routes }: any) {
         tokenSwapper.setAmount(Number(value.number));
       },
     });
+    numberInput.setValue(1)
+
   }, []);
 
   const account = useAccount();

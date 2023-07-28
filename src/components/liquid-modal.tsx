@@ -84,7 +84,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
         <b>Yield Farming: </b>
         
         Yield Farming allows you to earn passive income by investing in DeFi protocols. 
-        However, liquidity providers may experience "impermanent loss" due to price fluctuations of tokens. 
+        However, liquidity providers may experience impermanent loss due to price fluctuations of tokens. 
         It's important to invest carefully, considering this risk.
       </div>
       <button

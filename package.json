@@ -37,5 +37,13 @@
   "devDependencies": {
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.3.0"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false, 
+    "net": false,
+    "tls": false
   }
+  
 }

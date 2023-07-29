@@ -419,7 +419,7 @@ export function Swapper({ routes }: any) {
   return (
     <div className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full">
       <ul className="flex text-xl w-full">
-        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
+        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium text-center">
           Swap
         </li>
         

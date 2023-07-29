@@ -422,15 +422,7 @@ export function Swapper({ routes }: any) {
         <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
           Swap
         </li>
-        <li className="grow border-b border-[#D1D1D1] pr-4 font-small disabled">
-          Transfer
-        </li>
-        <li className="grow border-b border-[#D1D1D1] pr-4 font-small disabled">
-          Limit
-        </li>
-        <li className="grow border-b border-[#D1D1D1] pr-4 font-small disabled">
-          OTC
-        </li>
+        
       </ul>
       <div className="flex flex-col mt-6 gap-6 h-full">
         <div className="flex flex-col">

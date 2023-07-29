@@ -419,8 +419,17 @@ export function Swapper({ routes }: any) {
   return (
     <div className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full">
       <ul className="flex text-xl w-full">
-        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium text-center">
+        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
           Swap
+        </li>
+         <li className="cursor-not-allowed grow border-b border-[#D1D1D1] pr-4 font-medium">
+          Transfer
+        </li>
+        <li className="cursor-not-allowed grow border-b border-[#D1D1D1] pr-4 font-medium">
+          Limit
+        </li>
+        <li className="cursor-not-allowed	grow border-b border-[#D1D1D1] pr-4 font-medium">
+          OTC
         </li>
         
       </ul>

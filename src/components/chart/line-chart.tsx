@@ -13,7 +13,7 @@ export function LineChartComponent() {
   const [isClient, setIsClient] = useState(false);
 
   const data = new Array(12).fill(0).map((_, i) => ({
-    value: i + 100,
+    value: 0,
     name: Intl.DateTimeFormat("en-US", {
       month: "short",
     }).format(new Date(Date.now() + i * 1000 * 60 * 60 * 24 * 30)),

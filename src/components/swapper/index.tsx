@@ -13,10 +13,11 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 import classNames from "classnames";
 
 import { NumberInput } from "intl-number-input";
+import { useBalanaceOfV2 } from "@/hooks/useBalanceOf.v2";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 6,
-  maximumSignificantDigits: 6,
+  maximumFractionDigits: 12,
+  maximumSignificantDigits: 12,
 });
 
 export enum SwapperChainButtonType {
@@ -26,6 +27,7 @@ export enum SwapperChainButtonType {
 
 export type SwapperChainButtonProps = {
   type: SwapperChainButtonType;
+  centered?: boolean;
 };
 
 export type SwapperChainListButtonProps = {
@@ -172,7 +174,10 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
       </Modal>
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 right-3 top-1/2 -translate-y-1/2 absolute bg-[#F3F4F6] rounded-[9px] px-2 py-2 active:scale-95 transition"
+        className={
+          "flex items-center gap-2 right-3 absolute bg-[#F3F4F6] rounded-[9px] px-2 py-2 active:scale-95 transition " +
+          (props.centered ? "top-1/2 -translate-y-1/2" : "top-2")
+        }
       >
         <img
           className="w-[22px] h-[22px] rounded-full bg-secondary"
@@ -215,17 +220,26 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
 export function Swapper({ routes }: any) {
   const tokenSwapper = useTokenSwapper();
   const sellInputRef = useRef<any>(null);
+  const [sellInput, setSellInput] = useState<any>(null);
 
   useEffect(() => {
     const numberInput = new NumberInput({
       el: sellInputRef.current as any,
-      options: {},
+      options: {
+        locale: "en-US",
+      },
       onInput(value) {
         tokenSwapper.setAmount(Number(value.number));
       },
     });
-    numberInput.setValue(1)
 
+    numberInput.setValue(1);
+
+    setSellInput(numberInput);
+
+    return () => {
+      numberInput.destroy();
+    }
   }, []);
 
   const account = useAccount();
@@ -402,6 +416,8 @@ export function Swapper({ routes }: any) {
     });
   };
 
+  const balanceOf = useBalanaceOfV2();
+
   useMemo(() => {
     if (swapWaitForTransaction.isSuccess) {
       setTimeout(() => {
@@ -416,35 +432,72 @@ export function Swapper({ routes }: any) {
     swapContract.reset();
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
+  const [sellTokenBalance, setSellTokenBalance] = useState(0);
+
+  useMemo(async () => {
+    if (tokenSwapper.tokenSwapper.sellToken?.address) {
+      const balance = await balanceOf.getBalance(
+        tokenSwapper.tokenSwapper.sellToken?.address,
+      );
+
+      setSellTokenBalance(balance.formatted);
+    }
+
+    return () => {
+      setSellTokenBalance(0);
+    };
+  }, [tokenSwapper.tokenSwapper.sellToken?.address]);
+
+  const handleAllInClick = () => {
+    sellInput.setValue(sellTokenBalance);
+  };
+
   return (
     <div className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full">
       <ul className="flex text-xl w-full">
         <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
           Swap
         </li>
-         <li className="cursor-not-allowed grow border-b border-[#D1D1D1] pr-4 font-medium">
+        <li
+          title="Coming Soon"
+          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
+        >
           Transfer
         </li>
-        <li className="cursor-not-allowed grow border-b border-[#D1D1D1] pr-4 font-medium">
+        <li
+          title="Coming Soon"
+          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
+        >
           Limit
         </li>
-        <li className="cursor-not-allowed	grow border-b border-[#D1D1D1] pr-4 font-medium">
+        <li
+          title="Coming Soon"
+          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
+        >
           OTC
         </li>
-        
       </ul>
       <div className="flex flex-col mt-6 gap-6 h-full">
         <div className="flex flex-col">
           <span className="text-xs font-medium mb-2">Out</span>
-          <div className="flex flex-col relative w-full">
+          <div className="flex flex-col relative w-full bg-white border border-borderg py-4 ring ring-transparent transition rounded-xl px-4 focus-within:ring-primary-light">
             <input
               ref={sellInputRef}
               required
-              className="rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition"
+              className=" text-lg outline-none"
               placeholder="0"
               type="text"
             />
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
+            {account.isConnected && (
+              <p
+                onClick={handleAllInClick}
+                title={NumberFormatter.format(sellTokenBalance)}
+                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
+              >
+                Balance: {NumberFormatter.format(sellTokenBalance)}
+              </p>
+            )}
           </div>
         </div>
         <div className="flex flex-col">
@@ -468,7 +521,7 @@ export function Swapper({ routes }: any) {
               placeholder="0"
               type="text"
             />
-            <SwapperChainButton type={SwapperChainButtonType.Buy} />
+            <SwapperChainButton centered type={SwapperChainButtonType.Buy} />
           </div>
         </div>
 

@@ -8,7 +8,7 @@ import { useGetReserves } from "@/hooks/useGetReserves";
 import { usePools } from "@/hooks/usePools";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -35,13 +35,13 @@ export function ListItem({ pool }: ListItemProps) {
     {
       "max-h-0 mt-0 border-transparent": !open,
       "max-h-[512px] mt-4 pt-4 border-[#D1D1D1]": open,
-    },
+    }
   );
 
   useMemo(() => {
     setLiquid(
       reserves.data.reserve0 * pool.owner.price +
-        reserves.data.reserve1 * pool.target.price,
+        reserves.data.reserve1 * pool.target.price
     );
   }, [reserves.data]);
 
@@ -114,14 +114,14 @@ export function ListItem({ pool }: ListItemProps) {
                   balanceOf.data && totalSupply.data
                     ? (balanceOf.data / totalSupply.data) *
                         reserves.data.reserve0
-                    : 0,
+                    : 0
                 )}{" "}
                 <span className="text-sm">{pool.owner.symbol}</span> /{" "}
                 {NumberFormatter.format(
                   balanceOf.data && totalSupply.data
                     ? (balanceOf.data / totalSupply.data) *
                         reserves.data.reserve1
-                    : 0,
+                    : 0
                 )}{" "}
                 <span className="text-sm">{pool.target.symbol}</span>
               </span>
@@ -133,10 +133,90 @@ export function ListItem({ pool }: ListItemProps) {
   );
 }
 
+export function TrendItem({ pool }: ListItemProps) {
+  const reserves = useGetReserves(pool.pool.pairaddress);
+
+  return (
+    <div className="flex flex-col bg-secondary border border-border rounded-custom w-full py-8 px-6">
+      <div className="flex justify-between">
+        <div className="flex flex-col">
+          <h2 className="text-lg font-inter font-medium">
+            {pool.owner.symbol} / {pool.target.symbol}
+          </h2>
+          <div className="text-primary flex items-center mt-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              className="fill-primary mr-2"
+            >
+              <path
+                fill="currentColor"
+                d="M1 21h22L12 2L1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
+              />
+            </svg>
+            <span className="font-inter font-medium text-sm">Stable</span>
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-8 h-8 border border-transparent rounded-full">
+            <img className=" rounded-full" src={pool.owner.image} alt="" />
+          </div>
+          <div className="w-8 h-8 rounded-full border-2 border-white -ml-2">
+            <img
+              className="w-full h-full rounded-full"
+              src={pool.target.image}
+              alt=""
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center mt-4">
+        <span className="font-inter text-[#777] text-sm font-medium">
+          Liquidity:
+        </span>
+        <span className="text-lg font-inter ml-2 font-medium">
+          $
+          {NumberFormatter.format(
+            reserves.data.reserve0 * pool.owner.price +
+              reserves.data.reserve1 * pool.target.price
+          )}
+        </span>
+        <span className="ml-auto">
+          <span className="font-inter text-[#777] text-sm font-medium">
+            APR:
+          </span>
+          <span className="text-lg font-inter ml-2 font-medium">
+            {pool.pool.apr}%
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function Pool() {
   const pools = usePools({
     autoFetch: true,
   });
+
+  const [trendPools, setTrendPools] = useState<Pool[]>([]);
+
+  useMemo(() => {
+    if (!pools.state.pools) return;
+
+    const arr = [...pools.state.pools];
+
+    setTrendPools([
+      ...arr
+        .sort((a, b) => {
+          return b.pool.apr - a.pool.apr;
+        })
+        .slice(0, 3),
+    ]);
+  }, [pools.state.pools]);
 
   return (
     <>
@@ -149,59 +229,11 @@ export default function Pool() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-6">
-            <div className="flex flex-col bg-secondary border border-border rounded-custom w-full py-8 px-6">
-              <div className="flex justify-between">
-                <div className="flex flex-col">
-                  <h2 className="text-lg font-inter font-medium">wTENET / DYNA</h2>
-                  <div className="text-primary flex items-center mt-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      className="fill-primary mr-2"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M1 21h22L12 2L1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"
-                      />
-                    </svg>
-                    <span className="font-inter font-medium text-sm">
-                      Stable
-                    </span>
-                  </div>
-                </div>
-                <div className="flex">
-                  <div className="w-8 h-8 border border-transparent rounded-full">
-                    <img className=" rounded-full" src="/wTenet.png" alt="" />
-                  </div>
-                  <div className="w-8 h-8 rounded-full border-2 border-white -ml-2">
-                    <img
-                      className="w-full h-full rounded-full"
-                      src="/DYNA.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center mt-4">
-                <span className="font-inter text-[#777] text-sm font-medium">
-                  Liquidity:
-                </span>
-                <span className="text-lg font-inter ml-2 font-medium">
-                  $6,663,268.7
-                </span>
-                <span className="ml-auto">
-                  <span className="font-inter text-[#777] text-sm font-medium">
-                    APR:
-                  </span>
-                  <span className="text-lg font-inter ml-2 font-medium">
-                    3.9%
-                  </span>
-                </span>
-              </div>
-            </div>
+            {trendPools.map((pool, i) => (
+              <Suspense key={i} fallback={<div>Loading...</div>}>
+                <TrendItem pool={pool} />
+              </Suspense>
+            ))}
           </div>
         </section>
 

@@ -28,6 +28,7 @@ export function useBalanceOf(pairAddress: string) {
     address: pairAddress as any,
     functionName: "balanceOf",
     args: [account.address],
+    enabled: !!account.address,
     select: (data) => {
       return Number(data) / 10 ** 18;
     },

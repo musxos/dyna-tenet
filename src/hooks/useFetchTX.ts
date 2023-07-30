@@ -5,6 +5,7 @@ export type TX = {
   id: number;
   pair: string;
   maker: string;
+  date: string;
   result: {
     Price: number;
     Amount: number;

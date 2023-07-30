@@ -27,11 +27,15 @@ export function useLiquid({ pool }: { pool: Pool }) {
 
     const numberInput = new NumberInput({
       el: inputRef.current,
-      options: {},
+      options: {
+        locale: "en-US",
+      },
       onInput(value) {
         setAmount(value.number || 0);
       },
     });
+
+    numberInput.setValue(1);
   }, [inputRef.current, modalOpen]);
 
   const ownerTokenApprove = useApprove(pool.owner.address);
@@ -82,11 +86,12 @@ export function useLiquid({ pool }: { pool: Pool }) {
       <h1 className="px-6 text-xl font-medium mb-6">Add Liquidity</h1>
       <div className="text-sm mx-5 rounded-lg mt-2 mb-6 px-6 py-4 text-violet-500 bg-[#E8DEFD]">
         <b>Yield Farming: </b>
-        <p>Yield Farming allows you to earn passive income by investing in DeFi protocols. 
-          However, liquidity providers may experience impermanent loss due to price fluctuations of tokens. 
-          Its important to invest carefully, considering this risk.
+        <p>
+          Yield Farming allows you to earn passive income by investing in DeFi
+          protocols. However, liquidity providers may experience impermanent
+          loss due to price fluctuations of tokens. Its important to invest
+          carefully, considering this risk.
         </p>
- 
       </div>
       <button
         onClick={() => setModalOpen(false)}

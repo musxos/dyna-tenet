@@ -87,7 +87,10 @@ export function TableTokenItem({ token }: { token: Token }) {
       <div className="flex lg:block items-center justify-between text-left py-2 col-span-6 lg:col-span-1">
         <h1 className="lg:hidden text-[#777] text-sm">Balance</h1>
         <div className="flex items-center lg:items-baseline lg:flex-col">
-          <h5 className="text-lg">
+          <h5
+            title={NumberFormatter.format(data || 0)}
+            className="text-lg truncate w-full pr-6"
+          >
             {NumberFormatter.format(data || 0) || "-"}
           </h5>
           <span className="text-lg lg:hidden mx-2">/</span>

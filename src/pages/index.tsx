@@ -8,6 +8,7 @@ import { usePools } from "@/hooks/usePools";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { useEffect, useMemo, useState } from "react";
 import { useContractRead, useContractWrite } from "wagmi";
+import moment from "moment";
 
 const NumberFormat = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -115,8 +116,8 @@ export default function Home() {
             <div className="flex flex-col grow shrink-0">
               <Swapper routes={routes} />
             </div>
-            <div className="grow">
-              <div className="bg-secondary border border-border h-full flex flex-col rounded-custom p-6">
+            <div className="grow w-full">
+              <div className="bg-secondary border border-border h-full flex flex-col rounded-custom p-6 w-full">
                 <div className="flex lg:flex-row flex-col justify-between items-end">
                   <div className="flex flex-nowrap flex-col mb-2 mr-auto">
                     <span className="text-sm text-[#777] font-medium">
@@ -169,8 +170,10 @@ export default function Home() {
                           alt=""
                         />
                         <div className="grow border-b-4 border-border border-dotted relative">
-                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium">
-                            {tokenSwapper.tokenSwapper.amount}{" "}
+                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium whitespace-nowrap">
+                            {NumberFormat.format(
+                              tokenSwapper.tokenSwapper.amount,
+                            )}{" "}
                             {sellToken.symbol}
                           </div>
                         </div>
@@ -235,7 +238,7 @@ export default function Home() {
                           </td>
 
                           <td className="font-semibold py-3 pr-4 ">
-                            in 1 minute
+                            {moment(new Date(x.date)).fromNow()}{" "}
                           </td>
 
                           <td className="font-semibold py-3 pr-4">
@@ -334,7 +337,9 @@ export default function Home() {
                         <span className="text-[#777] font-medium w-32">
                           Update
                         </span>
-                        <span className="ml-12 font-medium">1 minute ago</span>
+                        <span className="ml-12 font-medium">
+                          {moment(new Date(x.date)).fromNow()}
+                        </span>
                       </div>
                       <div className="flex">
                         <span className="text-[#777] font-medium w-32">

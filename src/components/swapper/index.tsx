@@ -497,7 +497,7 @@ export function Swapper({ routes }: any) {
                 title={NumberFormatter.format(sellTokenBalance)}
                 className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
               >
-                Use Max <p className="d-none">{NumberFormatter.format(sellTokenBalance)}</p>
+                Use Max <p className="hidden">{NumberFormatter.format(sellTokenBalance)}</p>
               </p>
             )}
             {account.isConnected && ( 

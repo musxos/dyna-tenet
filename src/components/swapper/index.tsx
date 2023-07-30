@@ -495,7 +495,7 @@ export function Swapper({ routes }: any) {
                <p
                 onClick={handleAllInClick}
                 title={NumberFormatter.format(sellTokenBalance)}
-                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
+                className="text-sm text-[#777] mt-4 truncate w-32"
               >
              Use Max  -  Balance: {NumberFormatter.format(sellTokenBalance)}
               </p>

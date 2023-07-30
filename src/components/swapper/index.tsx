@@ -489,6 +489,8 @@ export function Swapper({ routes }: any) {
               type="text"
             />
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
+          
+          </div>
             {account.isConnected && (
               <p
                 onClick={handleAllInClick}
@@ -498,7 +500,6 @@ export function Swapper({ routes }: any) {
                 Balance: {NumberFormatter.format(sellTokenBalance)}
               </p>
             )}
-          </div>
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-medium mb-2">In</span>

@@ -492,15 +492,22 @@ export function Swapper({ routes }: any) {
           
           </div>
             {account.isConnected && (
-              <p onClick={handleAllInClick}
+             <p
+                onClick={handleAllInClick}
                 title={NumberFormatter.format(sellTokenBalance)}
-                className="mx-2">
+                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
+              >
                 Use Max
-                </p>
-              <p className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
+              </p>
+               <p
+                onClick={handleAllInClick}
+                title={NumberFormatter.format(sellTokenBalance)}
+                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
               >
                 Balance: {NumberFormatter.format(sellTokenBalance)}
               </p>
+
+      
             )}
         </div>
         <div className="flex flex-col">

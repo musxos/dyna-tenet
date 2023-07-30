@@ -491,22 +491,13 @@ export function Swapper({ routes }: any) {
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
           
           </div>
-           {account.isConnected && ( 
-               <p
-                onClick={handleAllInClick}
-                title={NumberFormatter.format(sellTokenBalance)}
-                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
-              >
-                Use Max <p className="hidden">{NumberFormatter.format(sellTokenBalance)}</p>
-              </p>
-            )}
             {account.isConnected && ( 
                <p
                 onClick={handleAllInClick}
                 title={NumberFormatter.format(sellTokenBalance)}
                 className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
               >
-                Balance: {NumberFormatter.format(sellTokenBalance)}
+             Use Max  -  Balance: {NumberFormatter.format(sellTokenBalance)}
               </p>
             )}
         </div>

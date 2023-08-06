@@ -35,13 +35,13 @@ export function ListItem({ pool }: ListItemProps) {
     {
       "max-h-0 mt-0 border-transparent": !open,
       "max-h-[512px] mt-4 pt-4 border-[#D1D1D1]": open,
-    }
+    },
   );
 
   useMemo(() => {
     setLiquid(
       reserves.data.reserve0 * pool.owner.price +
-        reserves.data.reserve1 * pool.target.price
+        reserves.data.reserve1 * pool.target.price,
     );
   }, [reserves.data]);
 
@@ -114,14 +114,14 @@ export function ListItem({ pool }: ListItemProps) {
                   balanceOf.data && totalSupply.data
                     ? (balanceOf.data / totalSupply.data) *
                         reserves.data.reserve0
-                    : 0
+                    : 0,
                 )}{" "}
                 <span className="text-sm">{pool.owner.symbol}</span> /{" "}
                 {NumberFormatter.format(
                   balanceOf.data && totalSupply.data
                     ? (balanceOf.data / totalSupply.data) *
                         reserves.data.reserve1
-                    : 0
+                    : 0,
                 )}{" "}
                 <span className="text-sm">{pool.target.symbol}</span>
               </span>
@@ -181,7 +181,7 @@ export function TrendItem({ pool }: ListItemProps) {
           $
           {NumberFormatter.format(
             reserves.data.reserve0 * pool.owner.price +
-              reserves.data.reserve1 * pool.target.price
+              reserves.data.reserve1 * pool.target.price,
           )}
         </span>
         <span className="ml-auto">

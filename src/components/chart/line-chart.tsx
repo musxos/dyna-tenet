@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -9,15 +9,25 @@ import {
   YAxis,
 } from "recharts";
 
-export function LineChartComponent() {
-  const [isClient, setIsClient] = useState(false);
+const NumberFormat = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
-  const data = new Array(12).fill(0).map((_, i) => ({
-    value: 0,
-    name: Intl.DateTimeFormat("en-US", {
-      month: "short",
-    }).format(new Date(Date.now() + i * 1000 * 60 * 60 * 24 * 30)),
-  }));
+export function LineChartComponent({ data }: any = { data: [] }) {
+  const [isClient, setIsClient] = useState(false);
+  const [_data, setData] = useState(data);
+
+  useMemo(() => {
+    const _data = data.map((item: any) => {
+      return {
+        name: new Date(item.date).toLocaleTimeString("en-US"),
+        value: Number(item.result.Price),
+      };
+    });
+
+    setData(_data);
+  }, [data]);
 
   useEffect(() => {
     setIsClient(true);
@@ -28,8 +38,8 @@ export function LineChartComponent() {
       {isClient && (
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart
-            data={data}
-            margin={{ top: 10, right: 30, left: -18, bottom: 0 }}
+            data={_data}
+            margin={{ top: 10, right: 30, left: 40, bottom: 0 }}
           >
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -38,11 +48,16 @@ export function LineChartComponent() {
               </linearGradient>
             </defs>
             <Tooltip
-              content={
+              content={({ payload, active, label }) => (
                 <div className="bg-secondary px-4 py-2 rounded-xl shadow">
-                  <span className="text-xs">05/07/2023 23:00 GMT+3</span>
+                  <span className="text-xs">
+                    {payload &&
+                      active &&
+                      payload.length &&
+                      NumberFormat.format(payload[0].value as number)}
+                  </span>
                 </div>
-              }
+              )}
             />
             <XAxis
               tick={{
@@ -57,6 +72,7 @@ export function LineChartComponent() {
               tick={{
                 fill: "#252525",
               }}
+              tickFormatter={(value) => NumberFormat.format(value.toFixed(0))}
               axisLine={false}
               tickLine={false}
               type="number"

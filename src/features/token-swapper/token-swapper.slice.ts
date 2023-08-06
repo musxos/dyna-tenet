@@ -1,4 +1,4 @@
-import { Tokens } from "@/app/constant/tokens";
+import Tokens, { InitTokens } from "@/context/tokens";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -18,8 +18,8 @@ export interface TokenSwapperState {
 }
 
 const initialState: TokenSwapperState = {
-  buyToken: Tokens[0],
-  sellToken: Tokens[2],
+  buyToken: InitTokens[0],
+  sellToken: InitTokens[2],
   amount: 1,
   pairs: [],
 };
@@ -33,11 +33,6 @@ export const tokenSwapperSlice = createSlice({
     },
     setSellToken: (state, action: PayloadAction<Token>) => {
       state.sellToken = action.payload;
-      state.pairs = action.payload.pairs.map(
-        (pair) => Tokens.find((token) => token.address === pair) as Token,
-      );
-
-      state.buyToken = state.pairs[0];
     },
     setSellAmount: (state, action: PayloadAction<number>) => {
       state.amount = action.payload;

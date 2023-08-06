@@ -9,8 +9,10 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { jsonRpcProvider } from "@wagmi/core/providers/jsonRpc";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import Tokens, { InitTokens } from "@/context/tokens";
+import { useState } from "react";
 
-const { chains, publicClient } = configureChains(
+const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
     {
       id: 155,
@@ -25,9 +27,11 @@ const { chains, publicClient } = configureChains(
       rpcUrls: {
         public: {
           http: ["https://rpc.testnet.tenet.org"],
+          webSocket: ["wss://rpc.testnet.tenet.org/ws"],
         },
         default: {
           http: ["https://rpc.testnet.tenet.org"],
+          webSocket: ["wss://rpc.testnet.tenet.org/ws"],
         },
       },
       blockExplorers: {
@@ -58,16 +62,43 @@ const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
+  webSocketPublicClient,
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [tokens, setTokens] = useState<InitTokens>(InitTokens || []);
+  const pushToken = (token: any) => {
+    setTokens((prev) => {
+      return [...prev, token];
+    });
+
+    return token;
+  };
+
+  const removeToken = (token: any) => {
+    setTokens((prev) => {
+      const newTokens = { ...prev };
+      delete newTokens[token.address];
+      return newTokens;
+    });
+  };
+
   return (
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
-        <Provider store={store}>
-          <Component {...pageProps} />
-        </Provider>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <Tokens.Provider
+      value={{
+        tokens: tokens,
+        setTokens,
+        pushToken,
+        removeToken,
+      }}
+    >
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
+          <Provider store={store}>
+            <Component {...pageProps} />
+          </Provider>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </Tokens.Provider>
   );
 }

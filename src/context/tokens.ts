@@ -1,4 +1,6 @@
-export const test = [
+import { createContext } from "react";
+
+export const InitTokens = [
   {
     name: "Dyna",
     symbol: "DYNA",
@@ -40,3 +42,12 @@ export const test = [
     pairs: ["0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"],
   },
 ];
+
+const Tokens = createContext({
+  tokens: InitTokens,
+  setTokens: (tokens: any) => {},
+  pushToken: (token: any) => {},
+  removeToken: (token: any) => {},
+});
+
+export default Tokens;

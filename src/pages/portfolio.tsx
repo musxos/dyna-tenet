@@ -1,8 +1,9 @@
-import { Tokens } from "@/app/constant/tokens";
 import { Navbar } from "@/components/layout/navbar";
+import Tokens from "@/context/tokens";
 import { Token } from "@/features/token-swapper/token-swapper.slice";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { toSvg } from "jdenticon";
+import { useContext } from "react";
 import { useAccount, useContractRead, useContractWrite } from "wagmi";
 
 const NumberFormatter = new Intl.NumberFormat("en-US");
@@ -129,6 +130,7 @@ export function TableTokenItem({ token }: { token: Token }) {
 }
 
 export default function Portfolio() {
+  const { tokens } = useContext(Tokens);
   const account = useAccount();
   const claimContract = useContractWrite({
     abi: [
@@ -226,7 +228,7 @@ export default function Portfolio() {
                   </th>
                 </div>
                 <div className="flex flex-col gap-3">
-                  {Tokens.map((token, i) => (
+                  {tokens.map((token, i) => (
                     <TableTokenItem key={i} token={token} />
                   ))}
                 </div>

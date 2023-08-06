@@ -1,14 +1,14 @@
-import { Tokens } from "@/app/constant/tokens";
 import { LineChartComponent } from "@/components/chart/line-chart";
 import { Navbar } from "@/components/layout/navbar";
 import { Swapper } from "@/components/swapper";
 import { useFetchTX } from "@/hooks/useFetchTX";
-import { usePair } from "@/hooks/usePair";
 import { usePools } from "@/hooks/usePools";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
-import { useEffect, useMemo, useState } from "react";
-import { useContractRead, useContractWrite } from "wagmi";
+import { useContext, useEffect, useMemo, useState } from "react";
 import moment from "moment";
+import { useGetAmountOut } from "@/hooks/useGetAmountOut";
+import Tokens from "@/context/tokens";
+import { usePairTransactions } from "@/hooks/usePairTransactions";
 
 const NumberFormat = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -16,6 +16,7 @@ const NumberFormat = new Intl.NumberFormat("en-US", {
 });
 
 export default function Home() {
+  const { tokens } = useContext(Tokens);
   const tokenSwapper = useTokenSwapper();
   const pools = usePools({
     autoFetch: true,
@@ -34,7 +35,7 @@ export default function Home() {
   const [price, setPrice] = useState<number>(0);
 
   useMemo(() => {
-    const wTENET = Tokens.find(
+    const wTENET = tokens.find(
       (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     );
 
@@ -43,6 +44,9 @@ export default function Home() {
 
     if (pools.state.pools.length > 0) {
       if (sellToken?.symbol == "wETH" || buyToken?.symbol == "wETH") {
+        if (sellToken?.isError || buyToken?.isError) {
+          return;
+        }
         const ethPool = pools.state.pools.find((x) => x.owner.symbol == "wETH");
         let pool;
 
@@ -86,7 +90,7 @@ export default function Home() {
   const [routes, setRoute] = useState<any[]>();
 
   useMemo(() => {
-    const wTENET = Tokens.find(
+    const wTENET = tokens.find(
       (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     );
 
@@ -95,17 +99,29 @@ export default function Home() {
 
     if (buyToken?.pairs.some((x) => x == sellToken?.address)) {
       setRoute([[sellToken!, buyToken!]]);
-    } else {
+    } else if (buyToken?.pairs.some((x) => x == wTENET?.address)) {
       setRoute([
         [sellToken!, wTENET!],
         [wTENET!, buyToken!],
       ]);
+    } else {
+      setRoute([]);
     }
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
+
+  const balanceOut = useGetAmountOut({
+    amount: tokenSwapper.tokenSwapper.amount,
+    path: routes as any,
+  });
 
   const tx = useFetchTX({
     autoFetch: true,
   });
+
+  const pairTransactions = usePairTransactions(
+    tokenSwapper.tokenSwapper.sellToken?.symbol || "",
+    tokenSwapper.tokenSwapper.buyToken?.symbol || "",
+  );
 
   return (
     <>
@@ -125,7 +141,10 @@ export default function Home() {
                       {tokenSwapper.tokenSwapper.sellToken?.symbol}
                     </span>
                     <span className="text-[40px] font-semibold">
-                      {NumberFormat.format(price)}
+                      {tokenSwapper.tokenSwapper.sellToken?.isError ||
+                      tokenSwapper.tokenSwapper.buyToken?.isError
+                        ? "-"
+                        : NumberFormat.format(price || 0)}
                       <span className="text-xs ml-2 font-normal text-red-500">
                         -4.41% (Past 3 days)
                       </span>
@@ -146,7 +165,9 @@ export default function Home() {
                 </div>
 
                 <div className="w-full mt-12">
-                  <LineChartComponent></LineChartComponent>
+                  <LineChartComponent data={pairTransactions.pairTransactions}>
+                    {" "}
+                  </LineChartComponent>
                 </div>
               </div>
             </div>
@@ -158,33 +179,45 @@ export default function Home() {
                   Trade Route
                 </div>
                 <div className="mt-12 flex flex-col gap-4">
-                  {routes?.map((route, i) => {
-                    const sellToken = route[0];
-                    const buyToken = route[1];
+                  {!tokenSwapper.tokenSwapper.sellToken?.isError &&
+                    !tokenSwapper.tokenSwapper.buyToken?.isError &&
+                    routes &&
+                    routes?.length > 0 &&
+                    routes?.map((route, i) => {
+                      const sellToken = route[0];
+                      const buyToken = route[1];
 
-                    return (
-                      <div key={i} className="flex items-center">
-                        <img
-                          className="w-8 h-8 rounded-full bg-secondary"
-                          src={sellToken.image}
-                          alt=""
-                        />
-                        <div className="grow border-b-4 border-border border-dotted relative">
-                          <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium whitespace-nowrap">
-                            {NumberFormat.format(
-                              tokenSwapper.tokenSwapper.amount,
-                            )}{" "}
-                            {sellToken.symbol}
+                      return (
+                        <div key={i} className="flex items-center">
+                          <img
+                            className="w-8 h-8 rounded-full bg-secondary"
+                            src={sellToken.image}
+                            alt=""
+                          />
+                          <div className="grow border-b-4 border-border border-dotted relative">
+                            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm font-medium whitespace-nowrap">
+                              {NumberFormat.format(
+                                tokenSwapper.tokenSwapper.amount,
+                              )}{" "}
+                              {sellToken.symbol}
+                            </div>
                           </div>
+                          <img
+                            className="w-8 h-8 rounded-full bg-secondary"
+                            src={buyToken.image}
+                            alt=""
+                          />
                         </div>
-                        <img
-                          className="w-8 h-8 rounded-full bg-secondary"
-                          src={buyToken.image}
-                          alt=""
-                        />
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  {(!routes ||
+                    !routes.length ||
+                    tokenSwapper.tokenSwapper.sellToken?.isError ||
+                    tokenSwapper.tokenSwapper.buyToken?.isError) && (
+                    <div className="flex items-center justify-center text-[#777]">
+                      No route found
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

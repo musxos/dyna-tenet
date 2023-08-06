@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import Modal from "../modal";
-import { Tokens } from "@/app/constant/tokens";
 import useTokenSwapper from "@/hooks/useTokenSwapper";
 import { Token } from "@/features/token-swapper/token-swapper.slice";
 import {
@@ -14,6 +13,10 @@ import classNames from "classnames";
 
 import { NumberInput } from "intl-number-input";
 import { useBalanaceOfV2 } from "@/hooks/useBalanceOf.v2";
+import { isAddress } from "viem";
+import { fetchCustomToken } from "@/hooks/fetchCustomToken";
+import Tokens, { InitTokens } from "@/context/tokens";
+import { getAllPairs } from "@/hooks/getAllPairs";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 12,
@@ -79,30 +82,39 @@ export function SwapperChainListButton({
 export function SwapperChainButton(props: SwapperChainButtonProps) {
   const tokenSwapper = useTokenSwapper();
   const [open, setOpen] = useState(false);
+  const { tokens, pushToken } = useContext(Tokens);
+
+  const handleSearchInput = async (e: any) => {
+    e.preventDefault();
+
+    const address = e.target.value;
+
+    if (!isAddress(address)) {
+      return;
+    }
+
+    const data = await fetchCustomToken(address);
+
+    if (tokens.some((token) => token.address === address)) {
+      return tokens.find((token) => token.address === address);
+    }
+
+    const result = await getAllPairs(address);
+
+    pushToken({
+      address: address,
+      image: "image.png",
+      name: String(data[2].result),
+      symbol: String(data[0].result),
+      isError: result.isError,
+      pairs: result.pairs,
+    } as any);
+  };
 
   useMemo(() => {
     setOpen(false);
   }, [tokenSwapper.tokenSwapper.buyToken, tokenSwapper.tokenSwapper.sellToken]);
 
-  const tokens = (
-    props.type == SwapperChainButtonType.Buy
-      ? Tokens.filter(
-          (x) =>
-            x.address != tokenSwapper.tokenSwapper.buyToken?.address &&
-            x.address != tokenSwapper.tokenSwapper.sellToken?.address,
-        )
-      : Tokens.filter(
-          (x) => x.address != tokenSwapper.tokenSwapper.sellToken?.address,
-        )
-  ).map((token) => {
-    return (
-      <SwapperChainListButton
-        key={token.address}
-        token={token}
-        type={props.type}
-      ></SwapperChainListButton>
-    );
-  });
   return (
     <>
       <Modal
@@ -145,6 +157,7 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
               />
             </svg>
             <input
+              onChange={handleSearchInput}
               className="bg-transparent outline-none w-full h-full"
               placeholder="Search name or paste address"
               type="text"
@@ -170,7 +183,28 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
           </button>
         </div>
         <hr className="my-4" />
-        <div className="flex flex-col gap-4">{tokens}</div>
+        <div className="flex flex-col gap-4">
+          {(props.type == SwapperChainButtonType.Buy
+            ? tokens.filter(
+                (x) =>
+                  x.address != tokenSwapper.tokenSwapper.buyToken?.address &&
+                  x.address != tokenSwapper.tokenSwapper.sellToken?.address,
+              )
+            : tokens.filter(
+                (x) =>
+                  x.address != tokenSwapper.tokenSwapper.sellToken?.address &&
+                  x.address != tokenSwapper.tokenSwapper.buyToken?.address,
+              )
+          ).map((token) => {
+            return (
+              <SwapperChainListButton
+                key={token.address}
+                token={token}
+                type={props.type}
+              ></SwapperChainListButton>
+            );
+          })}
+        </div>
       </Modal>
       <button
         onClick={() => setOpen(true)}
@@ -218,6 +252,7 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
 }
 
 export function Swapper({ routes }: any) {
+  const { tokens } = useContext(Tokens);
   const tokenSwapper = useTokenSwapper();
   const sellInputRef = useRef<any>(null);
   const [sellInput, setSellInput] = useState<any>(null);
@@ -239,13 +274,13 @@ export function Swapper({ routes }: any) {
 
     return () => {
       numberInput.destroy();
-    }
+    };
   }, []);
 
   const account = useAccount();
   const { openConnectModal } = useConnectModal();
 
-  const wTENET = Tokens.find(
+  const wTENET = InitTokens?.find(
     (x) => x.address == "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
   );
 
@@ -489,17 +524,16 @@ export function Swapper({ routes }: any) {
               type="text"
             />
             <SwapperChainButton type={SwapperChainButtonType.Sell} />
-          
-          </div>
-            {account.isConnected && ( 
-               <p
+            {account.isConnected && (
+              <p
                 onClick={handleAllInClick}
                 title={NumberFormatter.format(sellTokenBalance)}
-                className="text-sm text-[#777] ml-auto mt-4 truncate w-40"
+                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
               >
-               Balance: {NumberFormatter.format(sellTokenBalance)}
+                Balance: {NumberFormatter.format(sellTokenBalance)}
               </p>
             )}
+          </div>
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-medium mb-2">In</span>
@@ -507,7 +541,12 @@ export function Swapper({ routes }: any) {
             <input
               value={
                 getAmountOutContract.isError
-                  ? "Wrong input"
+                  ? tokenSwapper.tokenSwapper.amount == 0
+                    ? "Enter an amount"
+                    : getAmountOutContract.error?.name ==
+                      "ContractFunctionExecutionError"
+                    ? "No liquidity"
+                    : getAmountOutContract.error?.message
                   : getAmountOutContract.isLoading
                   ? "Loading..."
                   : NumberFormatter.format(

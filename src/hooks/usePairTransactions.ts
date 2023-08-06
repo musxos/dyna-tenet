@@ -9,7 +9,7 @@ export function usePairTransactions(
 
   async function fetchPairTransactions() {
     const response = await instance
-      .get(`lastdaypair/${tokenName}-${targetTokenName}`)
+      .get(`pairtx/${tokenName}-${targetTokenName}`)
       .catch((error) => {
         console.error(error);
 

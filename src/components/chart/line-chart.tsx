@@ -21,8 +21,8 @@ export function LineChartComponent({ data }: any = { data: [] }) {
   useMemo(() => {
     const _data = data.map((item: any) => {
       return {
-        name: new Date(item.date).toLocaleTimeString("en-US"),
-        value: Number(item.result.Price),
+        name: new Date(item.time).toLocaleTimeString("en-US"),
+        value: Number(item.price),
       };
     });
 

@@ -9,7 +9,7 @@ export function usePairTransactions(
 
   async function fetchPairTransactions() {
     const response = await instance
-      .get(`pairtx/${tokenName}-${targetTokenName}`)
+      .get(`price1hour/${tokenName}-${targetTokenName}`)
       .catch((error) => {
         console.error(error);
 

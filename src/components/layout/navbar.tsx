@@ -73,6 +73,7 @@ export function Navbar() {
     { name: "Trade", path: "/", active: true },
     { name: "Pool", path: "/pool" },
     { name: "Portfolio", path: "/portfolio" },
+    { name: "Liquidity", path: "/liquidity" }
   ];
 
   useOnClickOutside(sidebarRef, () => setSidebarOpen(false));

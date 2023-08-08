@@ -10,8 +10,8 @@ import {
 } from "recharts";
 
 const NumberFormat = new Intl.NumberFormat("en-US", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+  minimumFractionDigits: 6,
+  maximumFractionDigits: 6,
 });
 
 export function LineChartComponent({ data }: any = { data: [] }) {
@@ -62,22 +62,25 @@ export function LineChartComponent({ data }: any = { data: [] }) {
             <XAxis
               tick={{
                 fill: "#252525",
+                fontSize: 10,
               }}
-              tickLine={false}
+              tickMargin={15}
               axisLine={false}
               dataKey="name"
-              type="category"
             />
             <YAxis
+              tickMargin={10}
+              allowDecimals={true}
+              interval={0}
               tick={{
                 fill: "#252525",
               }}
-              tickFormatter={(value) => NumberFormat.format(value.toFixed(0))}
+              tickFormatter={(value) => NumberFormat.format(value)}
               axisLine={false}
               tickLine={false}
               type="number"
               dataKey="value"
-              domain={["auto", "auto"]}
+              domain={["dataMin", "dataMax"]}
             />
             <Area
               type="monotone"

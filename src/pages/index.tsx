@@ -9,6 +9,7 @@ import moment from "moment";
 import { useGetAmountOut } from "@/hooks/useGetAmountOut";
 import Tokens from "@/context/tokens";
 import { usePairTransactions } from "@/hooks/usePairTransactions";
+import classNames from "classnames";
 
 const NumberFormat = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 6,
@@ -118,9 +119,12 @@ export default function Home() {
     autoFetch: true,
   });
 
+  const [chartDateRange, setChartDateRange] = useState<any>("24H");
+
   const pairTransactions = usePairTransactions(
     tokenSwapper.tokenSwapper.sellToken?.symbol || "",
     tokenSwapper.tokenSwapper.buyToken?.symbol || "",
+    chartDateRange,
   );
 
   return (
@@ -152,14 +156,23 @@ export default function Home() {
                   </div>
 
                   <div className="flex ml-auto gap-4 mt-4">
-                    <button className="rounded-custom border border-primary text-primary text-sm px-4 py-2 bg-transparent font-normal active:scale-95 transition w-max">
-                      All Time
+                    <button
+                      onClick={() => setChartDateRange("24H")}
+                      className={
+                        "rounded-custom border hover:border-primary hover:text-primary text-sm px-4 py-2 bg-transparent font-normal active:scale-95 transition w-max [&.active]:border-primary [&.active]:text-primary border-transparent " +
+                        (chartDateRange == "24H" ? "active" : "")
+                      }
+                    >
+                      24H
                     </button>
-                    <button className="rounded-custom border border-transparent lg:block hidden text-sm px-4 py-2  font-normal active:scale-95 transition">
-                      7D
-                    </button>
-                    <button className="rounded text-sm px-4 py-2 font-normal lg:block hidden active:scale-95 transition">
-                      1M
+                    <button
+                      onClick={() => setChartDateRange("1H")}
+                      className={
+                        "rounded-custom border border-transparent hover:border-primary hover:text-primary lg:block hidden text-sm px-4 py-2  font-normal active:scale-95 transition [&.active]:border-primary [&.active]:text-primary " +
+                        (chartDateRange == "1H" ? "active" : "")
+                      }
+                    >
+                      1H
                     </button>
                   </div>
                 </div>

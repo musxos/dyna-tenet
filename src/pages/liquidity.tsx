@@ -2,6 +2,7 @@ import config from "@/app/config";
 import { Navbar } from "@/components/layout/navbar";
 import { PairState, setPair } from "@/features/pair/pair.slice";
 import { useAddLiquidity } from "@/hooks/useAddLiquidity";
+import { useAllowance } from "@/hooks/useAllowance";
 import { useApprove } from "@/hooks/useApprove";
 import { useBalanceOf } from "@/hooks/useBalanceOf";
 import { useBalanaceOfV2 } from "@/hooks/useBalanceOf.v2";
@@ -62,8 +63,8 @@ export function MyPosition(props: BaseProps) {
       <h1 className="text-2xl font-medium flex items-center mb-6">
         My Position
       </h1>
-      <div className="grid grid-cols-2 gap-6">
-        <div className="col-span-1 bg-white rounded-xl p-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="lg:col-span-1 bg-white rounded-xl p-8">
           <h1>
             <span className="text-[#777]">Total Liquidity</span>
           </h1>
@@ -76,7 +77,7 @@ export function MyPosition(props: BaseProps) {
             )}
           </span>
         </div>
-        <div className="col-span-1 bg-white rounded-xl p-8">
+        <div className="lg:col-span-1 bg-white rounded-xl p-8">
           <h1>
             <span className="text-[#777]">LP Tokens</span>
           </h1>
@@ -86,7 +87,7 @@ export function MyPosition(props: BaseProps) {
           </span>
         </div>
 
-        <div className="col-span-2 bg-white p-8 rounded-xl">
+        <div className="lg:col-span-2 bg-white p-8 rounded-xl">
           <h1>
             Your Position{" "}
             <span className="text-[#777]">
@@ -178,6 +179,9 @@ export function Withdraw(props: BaseProps) {
 
   const account = useAccount();
 
+  const ownerTokenAllowance = useAllowance(
+    props.pair.pair?.pool.pairaddress as any,
+  );
   const ownerTokenApprove = useApprove(
     props.pair.pair?.pool.pairaddress as any,
   );
@@ -201,6 +205,13 @@ export function Withdraw(props: BaseProps) {
       ],
     });
   };
+
+  useEffect(() => {
+    ownerTokenAllowance.contract.refetch();
+  }, [
+    removeLiquidity.waitForTransaction.isSuccess,
+    ownerTokenApprove.waitForTransaction.isSuccess,
+  ]);
 
   useEffect(() => {
     if (inputRef.current == null) return;
@@ -227,7 +238,7 @@ export function Withdraw(props: BaseProps) {
         neque alias in illum distinctio nihil?
       </p>
       <h3 className="mb-4 text-[#777]">Amount to withdraw</h3>
-      <div className="flex gap-12 w-full">
+      <div className="flex lg:flex-row flex-col gap-12 w-full">
         <div className="grow flex flex-col gap-12">
           <div className="flex flex-col p-8 rounded-xl bg-white">
             <input
@@ -236,7 +247,7 @@ export function Withdraw(props: BaseProps) {
               placeholder="0.0"
               type="text"
             />
-            <div className="flex items-center justify-between">
+            <div className="flex lg:flex-row flex-col lg:items-center justify-between">
               <span className="text-[#777]">
                 $
                 {NumberFormatter.format(
@@ -274,7 +285,7 @@ export function Withdraw(props: BaseProps) {
                     );
                     setAmount((balanceOf.data || 0) * 0.25);
                   }}
-                  className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
+                  className="lg:px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   %25
                 </button>
@@ -287,7 +298,7 @@ export function Withdraw(props: BaseProps) {
                     );
                     setAmount((balanceOf.data || 0) * 0.5);
                   }}
-                  className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
+                  className="lg:px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   %50
                 </button>
@@ -300,7 +311,7 @@ export function Withdraw(props: BaseProps) {
                     );
                     setAmount((balanceOf.data || 0) * 0.75);
                   }}
-                  className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
+                  className="lg:px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   %75
                 </button>
@@ -311,7 +322,7 @@ export function Withdraw(props: BaseProps) {
                     inputRef.current.value = String((balanceOf.data || 0) * 1);
                     setAmount((balanceOf.data || 0) * 1);
                   }}
-                  className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
+                  className="lg:px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white"
                 >
                   MAX
                 </button>
@@ -364,8 +375,7 @@ export function Withdraw(props: BaseProps) {
                 </div>
               </div>
             </div>
-
-            {!ownerTokenApprove.waitForTransaction.isSuccess && (
+            {(ownerTokenAllowance.data?.allowance || 0) < (amount || 0) && (
               <button
                 onClick={handleOwnerTokenApprove}
                 className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
@@ -378,7 +388,7 @@ export function Withdraw(props: BaseProps) {
               </button>
             )}
 
-            {ownerTokenApprove.waitForTransaction.isSuccess && (
+            {(ownerTokenAllowance.data?.allowance || 0) >= (amount || 0) && (
               <button
                 onClick={handleRemoveLiquidity}
                 className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
@@ -393,7 +403,7 @@ export function Withdraw(props: BaseProps) {
           </div>
         </div>
 
-        <div className="w-96 flex flex-col gap-8">
+        <div className="lg:w-96 flex flex-col gap-8">
           <div className="p-8 rounded-xl bg-white">
             <span className="text-xl font-medium text-primary">1/3</span>
             <h1 className="text-2xl text-black/80 mt-2">Choose a percent</h1>
@@ -471,6 +481,13 @@ export function Deposit(props: BaseProps) {
     })();
   }, []);
 
+  const ownerTokenAllowance = useAllowance(
+    props.pair.pair?.owner.address as any,
+  );
+  const targetTokenAllowance = useAllowance(
+    props.pair.pair?.target.address as any,
+  );
+
   const ownerTokenApprove = useApprove(props.pair.pair?.owner.address as any);
   const targetTokenApprove = useApprove(props.pair.pair?.target.address as any);
   const addLiquidity = useAddLiquidity();
@@ -486,6 +503,14 @@ export function Deposit(props: BaseProps) {
       args: [config.ROUTER_ADDRESS, (getAmountOut.data || 0) * 1e18],
     });
   };
+
+  useEffect(() => {
+    ownerTokenAllowance.contract.refetch();
+    targetTokenAllowance.contract.refetch();
+  }, [
+    ownerTokenApprove.waitForTransaction.isSuccess,
+    targetTokenApprove.waitForTransaction.isSuccess,
+  ]);
 
   const account = useAccount();
 
@@ -521,11 +546,11 @@ export function Deposit(props: BaseProps) {
         Deposit tokens to start earning trading fees and more rewards.
       </p>
 
-      <div className="mt-12 flex gap-12">
+      <div className="mt-12 flex lg:flex-row flex-col gap-12">
         <div className="bg-white p-8 grow rounded-xl h-max">
           <h3 className="text-[#777]">Tokens to deposit</h3>
           <div className="flex flex-col mt-8">
-            <div className="flex items-center">
+            <div className="flex lg:flex-row flex-col gap-2 lg:items-center">
               <div className="flex gap-4 items-center">
                 <img
                   src={props.pair.pair?.owner.image}
@@ -539,7 +564,7 @@ export function Deposit(props: BaseProps) {
                   </span>
                 </div>
               </div>
-              <div className="text-[#777] ml-auto mr-4">
+              <div className="text-[#777] ml-auto mr-4 truncate w-full">
                 Balance {NumberFormatter.format(token0)}
               </div>
 
@@ -562,9 +587,8 @@ export function Deposit(props: BaseProps) {
               type="text"
             />
           </div>
-
           <div className="flex flex-col mt-8">
-            <div className="flex items-center">
+            <div className="flex lg:flex-row flex-col lg:items-center">
               <div className="flex gap-4 items-center">
                 <img
                   src={props.pair.pair?.target.image}
@@ -578,7 +602,7 @@ export function Deposit(props: BaseProps) {
                   </span>
                 </div>
               </div>
-              <div className="text-[#777] ml-auto mr-4">
+              <div className="text-[#777] ml-auto mr-4 truncate w-full">
                 Balance {NumberFormatter.format(token1)}
               </div>
             </div>
@@ -590,23 +614,23 @@ export function Deposit(props: BaseProps) {
               value={NumberFormatter.format(getAmountOut.data || 0)}
             />
           </div>
-
-          {!ownerTokenApprove.waitForTransaction.isSuccess && (
-            <button
-              onClick={handleOwnerTokenApprove}
-              className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
-            >
-              {ownerTokenApprove.waitForTransaction.isError
-                ? "Approve Error"
-                : ownerTokenApprove.waitForTransaction.isLoading
-                ? "Approving..."
-                : "Approve"}
-              ({props.pair.pair?.owner.symbol})
-            </button>
-          )}
-
-          {ownerTokenApprove.waitForTransaction.isSuccess &&
-            !targetTokenApprove.waitForTransaction.isSuccess && (
+          {(ownerTokenAllowance.data?.allowance || 0) < amount &&
+            !ownerTokenApprove.waitForTransaction.isSuccess && (
+              <button
+                onClick={handleOwnerTokenApprove}
+                className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
+              >
+                {ownerTokenApprove.waitForTransaction.isError
+                  ? "Approve Error"
+                  : ownerTokenApprove.waitForTransaction.isLoading
+                  ? "Approving..."
+                  : "Approve"}
+                ({props.pair.pair?.owner.symbol})
+              </button>
+            )}
+          {(targetTokenAllowance.data?.allowance || 0) <
+            (getAmountOut.data || 0) &&
+            (ownerTokenAllowance.data?.allowance || 0) >= amount && (
               <button
                 onClick={handleTargetTokenApprove}
                 className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
@@ -619,9 +643,9 @@ export function Deposit(props: BaseProps) {
                 ({props.pair.pair?.target.symbol})
               </button>
             )}
-
-          {ownerTokenApprove.waitForTransaction.isSuccess &&
-            targetTokenApprove.waitForTransaction.isSuccess && (
+          {amount <= (ownerTokenAllowance.data?.allowance || 0) &&
+            (getAmountOut.data || 0) <=
+              (targetTokenAllowance.data?.allowance || 0) && (
               <button
                 onClick={handleAddLiquidity}
                 className="mt-8 text-center border border-primary py-3 px-8 w-full rounded-xl text-primary hover:bg-primary hover:text-white transition"
@@ -634,7 +658,7 @@ export function Deposit(props: BaseProps) {
               </button>
             )}
         </div>
-        <div className="w-96 flex flex-col gap-8">
+        <div className="w-full lg:w-96 flex flex-col gap-8">
           <div className="bg-white p-8 rounded-xl">
             <p className="text-primary mb-4">1/4</p>
             <h1 className="text-2xl font-medium">Put your assets to work</h1>
@@ -715,9 +739,9 @@ export function Overview(props: BaseProps) {
       </h1>
       <p className="text-[#777] text-sm mt-4">
         Contract:{" "}
-        <span className="ml-4">{props.pair.pair?.pool.pairaddress}</span>
+        <span className="lg:ml-4">{props.pair.pair?.pool.pairaddress}</span>
       </p>
-      <div className="mt-4 px-4 py-2 rounded bg-white w-max flex items-center">
+      <div className="mt-4 px-4 py-2 rounded bg-white lg:w-max flex items-center">
         <div className="flex items-center">
           <img
             src={props.pair.pair?.owner.image}
@@ -792,7 +816,7 @@ export function Overview(props: BaseProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-8 mt-4 p-6 bg-white rounded-xl">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mt-4 p-6 bg-white rounded-xl">
         <div className="flex flex-col">
           <h3 className="text-[#777] text-sm">TVL</h3>
           <span className="text-2xl font-medium mt-2 opacity-75">
@@ -818,7 +842,7 @@ export function Overview(props: BaseProps) {
       <div className="flex flex-col mt-4 p-6 bg-white rounded-xl">
         <h1 className="text-[#777] text-xl">LP Rewards</h1>
 
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="flex items-center mt-6">
             <div className="w-12 h-12 rounded-xl border flex items-center justify-center bg-gray-50">
               <svg
@@ -895,8 +919,8 @@ export default function Liquidity() {
     <>
       <Navbar />
 
-      <main className="container mx-auto mt-12 flex gap-12">
-        <div className="flex flex-col gap-4 w-44 ">
+      <main className="container px-4 mx-auto mt-12 flex lg:flex-row flex-col gap-12">
+        <div className="flex flex-row lg:flex-col gap-4 w-full overflow-x-auto  lg:w-44  [&_button]:w-32 [&_a]:w-32 [&_button]:grow-0 [&_a]:shrink-0 [&_button]:shrink-0 [&_a]:grow-0">
           <Link
             href="/pool"
             className="text-[#777]  text-left flex items-center py-3"

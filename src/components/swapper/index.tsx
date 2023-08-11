@@ -17,6 +17,7 @@ import { isAddress } from "viem";
 import { fetchCustomToken } from "@/hooks/fetchCustomToken";
 import Tokens, { InitTokens } from "@/context/tokens";
 import { getAllPairs } from "@/hooks/getAllPairs";
+import { useAllowance } from "@/hooks/useAllowance";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 12,
@@ -368,6 +369,10 @@ export function Swapper({ routes }: any) {
     hash: approveContract.data?.hash,
   });
 
+  const ownerTokenAllowance = useAllowance(
+    tokenSwapper.tokenSwapper.sellToken?.address as any,
+  );
+
   const handleApproveClick = async () => {
     const result = await approveContract.writeAsync({
       args: [
@@ -427,6 +432,10 @@ export function Swapper({ routes }: any) {
   const swapWaitForTransaction = useWaitForTransaction({
     hash: swapContract.data?.hash,
   });
+
+  useEffect(() => {
+    ownerTokenAllowance.contract.refetch();
+  }, [approveWaitForTransaction.isSuccess, swapWaitForTransaction.isSuccess]);
 
   const handleSwapClick = async (e: any) => {
     e.preventDefault();
@@ -574,36 +583,40 @@ export function Swapper({ routes }: any) {
               Connect Wallet
             </button>
           )}
-          {account.isConnected && !approveWaitForTransaction.isSuccess && (
-            <button
-              onClick={handleApproveClick}
-              disabled={
-                approveWaitForTransaction.isLoading ||
+          {account.isConnected &&
+            (ownerTokenAllowance.data?.allowance || 0) <
+              tokenSwapper.tokenSwapper.amount && (
+              <button
+                onClick={handleApproveClick}
+                disabled={
+                  approveWaitForTransaction.isLoading ||
+                  approveWaitForTransaction.isFetching
+                }
+                className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+              >
+                {approveWaitForTransaction.isLoading ||
                 approveWaitForTransaction.isFetching
-              }
-              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
-            >
-              {approveWaitForTransaction.isLoading ||
-              approveWaitForTransaction.isFetching
-                ? "Approving..."
-                : approveWaitForTransaction.isSuccess
-                ? "Approved"
-                : "Approve"}
-            </button>
-          )}
-          {account.isConnected && approveWaitForTransaction.isSuccess && (
-            <button
-              onClick={handleSwapClick}
-              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
-            >
-              {swapWaitForTransaction.isLoading ||
-              swapWaitForTransaction.isFetching
-                ? "Swapping..."
-                : swapWaitForTransaction.isSuccess
-                ? "Swapped"
-                : "Swap"}
-            </button>
-          )}
+                  ? "Approving..."
+                  : approveWaitForTransaction.isSuccess
+                  ? "Approved"
+                  : "Approve"}
+              </button>
+            )}
+          {account.isConnected &&
+            (ownerTokenAllowance.data?.allowance || 0) >=
+              tokenSwapper.tokenSwapper.amount && (
+              <button
+                onClick={handleSwapClick}
+                className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+              >
+                {swapWaitForTransaction.isLoading ||
+                swapWaitForTransaction.isFetching
+                  ? "Swapping..."
+                  : swapWaitForTransaction.isSuccess
+                  ? "Swapped"
+                  : "Swap"}
+              </button>
+            )}
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { useGetReserves } from "@/hooks/useGetReserves";
 import { usePools } from "@/hooks/usePools";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
+import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
@@ -83,12 +84,12 @@ export function ListItem({ pool }: ListItemProps) {
           </span>
         </div>
         <div className="flex items-center lg:justify-end col-span-6 lg:col-span-1 pr-4 lg:mt-0 mt-5">
-          <button
-            onClick={() => liquid.setModalOpen(true)}
+          <Link
+            href={`/liquidity?pairAddress=${pool.pool.pairaddress}`}
             className="font-inter font-medium text-center lg:w-max w-full lg:mx-0 mx-4 lg:bg-transparent bg-primary text-white lg:text-current py-3 lg:py-0 lg:rounded-none rounded-[11px]"
           >
-            Add Liquidity
-          </button>
+            Manage Liquidity
+          </Link>
         </div>
         <div className={className}>
           <div className="grid grid-cols-6 py-3 font-medium">

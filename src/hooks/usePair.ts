@@ -3,6 +3,7 @@ import { setPair } from "@/features/pair/pair.slice";
 import { Pool } from "@/features/pool/pool.slice";
 import instance from "@/services/axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { isAddress } from "viem";
 
 export type UsePair = {
   autoFetch: boolean;
@@ -17,16 +18,16 @@ export const DEFAULT_ARGUMENTS: UsePair = {
 /**
  * @deprecated
  */
-export function usePair({
-  autoFetch,
-  pairAddress,
-}: UsePair = DEFAULT_ARGUMENTS) {
+export function usePair({ autoFetch, pairAddress }: UsePair) {
   const dispatch = useAppDispatch();
   const state = useAppSelector((state) => state.pair);
 
   useMemo(() => {
-    console.log(pairAddress);
     if (!autoFetch || !pairAddress) {
+      return;
+    }
+
+    if (!isAddress(pairAddress)) {
       return;
     }
 

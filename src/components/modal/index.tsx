@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useOnClickOutside } from "usehooks-ts";
@@ -21,13 +22,22 @@ export default function Modal(props: ModalProps) {
     setMounted(true);
   }, []);
 
-  return mounted && props.open
+  return mounted
     ? createPortal(
-        <div className="fixed  top-0 left-0 w-full h-full overflow-hidden bg-black/40 z-50 flex items-center justify-center">
-          <div ref={modalRef} className={props.className}>
-            {props.children}
-          </div>
-        </div>,
+        <AnimatePresence>
+          {props.open && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed  top-0 left-0 w-full h-full overflow-hidden bg-black/40 z-50 flex items-center justify-center"
+            >
+              <div ref={modalRef} className={props.className}>
+                {props.children}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
         ref.current,
       )
     : null;

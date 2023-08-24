@@ -11,6 +11,7 @@ import { useGetReserves } from "@/hooks/useGetReserves";
 import { usePair } from "@/hooks/usePair";
 import { useRemoveLiquidity } from "@/hooks/useRemoveLiquidity";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
+import { AnimatePresence, motion } from "framer-motion";
 import { NumberInput } from "intl-number-input";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -227,7 +228,7 @@ export function Withdraw(props: BaseProps) {
       },
     });
 
-    numberInput.setValue(1);
+    numberInput.setValue(0);
   }, [inputRef.current]);
 
   return (
@@ -427,7 +428,7 @@ export function Withdraw(props: BaseProps) {
 }
 
 export function Deposit(props: BaseProps) {
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState(0);
 
   const [token0, setToken0] = useState(0);
   const [token1, setToken1] = useState(0);
@@ -460,7 +461,7 @@ export function Deposit(props: BaseProps) {
       },
     });
 
-    numberInput.setValue(1);
+    numberInput.setValue(0);
 
     setNumberInput(numberInput);
   }, [inputRef.current]);
@@ -916,64 +917,69 @@ export default function Liquidity() {
   }, [router.isReady]);
 
   return (
-    <>
-      <Navbar />
+    <div className="flex lg:flex-row flex-col w-full">
+      <div className="flex flex-row lg:flex-col gap-4 w-full overflow-x-auto  lg:w-44  [&_button]:w-32 [&_a]:w-32 [&_button]:grow-0 [&_a]:shrink-0 [&_button]:shrink-0 [&_a]:grow-0">
+        <Link
+          href="/pool"
+          className="text-[#777]  text-left flex items-center py-3"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-4 h-4"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 19.5L8.25 12l7.5-7.5"
+            />
+          </svg>
 
-      <main className="container px-4 mx-auto mt-12 flex lg:flex-row flex-col gap-12">
-        <div className="flex flex-row lg:flex-col gap-4 w-full overflow-x-auto  lg:w-44  [&_button]:w-32 [&_a]:w-32 [&_button]:grow-0 [&_a]:shrink-0 [&_button]:shrink-0 [&_a]:grow-0">
-          <Link
-            href="/pool"
-            className="text-[#777]  text-left flex items-center py-3"
+          <span className="ml-2">Pools</span>
+        </Link>
+        <button
+          onClick={() => setPage("overview")}
+          className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
+        >
+          Overview
+        </button>
+        <button
+          onClick={() => setPage("my-position")}
+          className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
+        >
+          My Position
+        </button>
+        <button
+          onClick={() => setPage("deposit")}
+          className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
+        >
+          Deposit
+        </button>
+        <button
+          onClick={() => setPage("withdraw")}
+          className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
+        >
+          Withdraw
+        </button>
+      </div>
+      <div className="flex flex-col grow">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={page}
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 100 }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-
-            <span className="ml-2">Pools</span>
-          </Link>
-          <button
-            onClick={() => setPage("overview")}
-            className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
-          >
-            Overview
-          </button>
-          <button
-            onClick={() => setPage("my-position")}
-            className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
-          >
-            My Position
-          </button>
-          <button
-            onClick={() => setPage("deposit")}
-            className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
-          >
-            Deposit
-          </button>
-          <button
-            onClick={() => setPage("withdraw")}
-            className="text-left hover:bg-white text-[#777] pl-6 pr-4 py-3 rounded-md"
-          >
-            Withdraw
-          </button>
-        </div>
-        <div className="flex flex-col grow">
-          {page === "overview" && <Overview pair={pair.state} />}
-          {page === "my-position" && <MyPosition pair={pair.state} />}
-          {page === "deposit" && <Deposit pair={pair.state} />}
-          {page === "withdraw" && <Withdraw pair={pair.state} />}
-        </div>
-      </main>
-    </>
+            {page === "overview" && <Overview pair={pair.state} />}
+            {page === "my-position" && <MyPosition pair={pair.state} />}
+            {page === "deposit" && <Deposit pair={pair.state} />}
+            {page === "withdraw" && <Withdraw pair={pair.state} />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }

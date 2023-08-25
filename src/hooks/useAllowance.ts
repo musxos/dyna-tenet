@@ -31,7 +31,6 @@ export function useAllowance(tokenAddress: string) {
         type: "function",
       },
     ],
-    watch: true,
 
     address: tokenAddress as any,
     functionName: "allowance",

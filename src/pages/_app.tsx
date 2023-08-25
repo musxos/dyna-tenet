@@ -11,8 +11,6 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import Tokens, { InitTokens } from "@/context/tokens";
 import { useState } from "react";
-import { Navbar } from "@/components/layout/navbar";
-import { AnimatePresence, motion } from "framer-motion";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -67,7 +65,7 @@ const wagmiConfig = createConfig({
   webSocketPublicClient,
 });
 
-export default function App({ Component, pageProps, router }: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const [tokens, setTokens] = useState<InitTokens>(InitTokens || []);
   const pushToken = (token: any) => {
     setTokens((prev) => {
@@ -97,18 +95,7 @@ export default function App({ Component, pageProps, router }: AppProps) {
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains}>
           <Provider store={store}>
-            <Navbar />
-            <AnimatePresence initial={false} mode="wait">
-              <motion.main
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                key={router.asPath}
-                className="container mx-auto mt-12 xl:px-0 px-4 mb-8"
-              >
-                <Component {...pageProps} />
-              </motion.main>
-            </AnimatePresence>
+            <Component {...pageProps} />
           </Provider>
         </RainbowKitProvider>
       </WagmiConfig>

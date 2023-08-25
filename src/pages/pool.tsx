@@ -8,7 +8,6 @@ import { useGetReserves } from "@/hooks/useGetReserves";
 import { usePools } from "@/hooks/usePools";
 import { useTotalSupply } from "@/hooks/useTotalSupply";
 import classNames from "classnames";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { Suspense, useMemo, useState } from "react";
 
@@ -19,24 +18,14 @@ const NumberFormatter = new Intl.NumberFormat("en-US", {
 
 export type ListItemProps = {
   pool: Pool;
-  index?: number;
 };
 
-const variants = {
-  initial: {
-    opacity: 0,
-  },
-  enter: (i: number) => ({
-    opacity: 1,
-    transition: {
-      delay: i * 0.1,
-    },
-  }),
-};
-
-export function ListItem({ pool, index }: ListItemProps) {
+export function ListItem({ pool }: ListItemProps) {
   const [open, setOpen] = useState(false);
   const [liquidity, setLiquid] = useState(0);
+  const liquid = useLiquid({
+    pool: pool,
+  });
 
   const totalSupply = useTotalSupply(pool.pool.pairaddress);
   const balanceOf = useBalanceOf(pool.pool.pairaddress);
@@ -59,11 +48,8 @@ export function ListItem({ pool, index }: ListItemProps) {
 
   return (
     <>
-      <motion.div
-        variants={variants}
-        initial="initial"
-        animate="enter"
-        custom={index}
+      {liquid.modal}
+      <div
         onClick={() => setOpen((v) => !v)}
         className="grid grid-cols-6 bg-secondary border border-border py-4 rounded-custom active:scale-[.99] transition cursor-pointer h-full"
       >
@@ -143,22 +129,16 @@ export function ListItem({ pool, index }: ListItemProps) {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
 
-export function TrendItem({ pool, index }: ListItemProps) {
+export function TrendItem({ pool }: ListItemProps) {
   const reserves = useGetReserves(pool.pool.pairaddress);
 
   return (
-    <motion.div
-      variants={variants}
-      initial="initial"
-      animate="enter"
-      custom={index}
-      className="flex flex-col bg-secondary border border-border rounded-custom w-full py-8 px-6"
-    >
+    <div className="flex flex-col bg-secondary border border-border rounded-custom w-full py-8 px-6">
       <div className="flex justify-between">
         <div className="flex flex-col">
           <h2 className="text-lg font-inter font-medium">
@@ -214,7 +194,7 @@ export function TrendItem({ pool, index }: ListItemProps) {
           </span>
         </span>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -241,55 +221,58 @@ export default function Pool() {
 
   return (
     <>
-      <section className="flex flex-col">
-        <div className="flex items-center space-x-2 mb-12">
-          <h2 className="font-inter text-primary font-medium text-xl">
-            Trending
-          </h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-6">
-          {trendPools.map((pool, i) => (
-            <Suspense key={i} fallback={<div>Loading...</div>}>
-              <TrendItem pool={pool} index={i} />
-            </Suspense>
-          ))}
-        </div>
-      </section>
+      <Navbar />
+      <main className="container mx-auto mt-12 md:px-0 px-4 mb-8">
+        <section className="flex flex-col">
+          <div className="flex items-center space-x-2 mb-12">
+            <h2 className="font-inter text-primary font-medium text-xl">
+              Trending
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-6">
+            {trendPools.map((pool, i) => (
+              <Suspense key={i} fallback={<div>Loading...</div>}>
+                <TrendItem pool={pool} />
+              </Suspense>
+            ))}
+          </div>
+        </section>
 
-      <section className="mt-24">
-        <div className="flex items-center">
-          <h1 className="font-inter text-xl text-primary font-medium">
-            All Pools
-          </h1>
-        </div>
+        <section className="mt-24">
+          <div className="flex items-center">
+            <h1 className="font-inter text-xl text-primary font-medium">
+              All Pools
+            </h1>
+          </div>
 
-        <div className="mt-4 overflow-x-auto">
-          <div className="w-full lg:min-w-fit">
-            <div className="grid grid-cols-6">
-              <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-2">
-                Pool
-              </p>
-              <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
-                Type
-              </p>
-              <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
-                Liquidity
-              </p>
-              <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
-                APR
-              </p>
-              <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1"></p>
-            </div>
-            <div>
-              <div className="flex flex-col gap-2 rounded">
-                {pools.state.pools.map((pool, i) => (
-                  <ListItem key={i} pool={pool} index={i} />
-                ))}
+          <div className="mt-4 overflow-x-auto">
+            <div className="w-full lg:min-w-fit">
+              <div className="grid grid-cols-6">
+                <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-2">
+                  Pool
+                </p>
+                <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
+                  Type
+                </p>
+                <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
+                  Liquidity
+                </p>
+                <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1">
+                  APR
+                </p>
+                <p className="text-left font-inter font-normal text-[#777] text-sm pb-4 col-span-1"></p>
+              </div>
+              <div>
+                <div className="flex flex-col gap-2 rounded">
+                  {pools.state.pools.map((pool, i) => (
+                    <ListItem key={i} pool={pool} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
     </>
   );
 }

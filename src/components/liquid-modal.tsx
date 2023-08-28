@@ -35,7 +35,7 @@ export function useLiquid({ pool }: { pool: Pool }) {
       },
     });
 
-    numberInput.setValue(1);
+    numberInput.setValue(0);
   }, [inputRef.current, modalOpen]);
 
   const ownerTokenApprove = useApprove(pool.owner.address);

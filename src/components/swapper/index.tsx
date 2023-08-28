@@ -6,6 +6,7 @@ import {
   useAccount,
   useContractRead,
   useContractWrite,
+  useFeeData,
   useWaitForTransaction,
 } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -18,6 +19,7 @@ import { fetchCustomToken } from "@/hooks/fetchCustomToken";
 import Tokens, { InitTokens } from "@/context/tokens";
 import { getAllPairs } from "@/hooks/getAllPairs";
 import { useAllowance } from "@/hooks/useAllowance";
+import { AnimatePresence, motion } from "framer-motion";
 
 const NumberFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 12,
@@ -252,11 +254,170 @@ export function SwapperChainButton(props: SwapperChainButtonProps) {
   );
 }
 
+const variants = {
+  flip3D: {
+    rotateY: 180,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
+
 export function Swapper({ routes }: any) {
-  const { tokens } = useContext(Tokens);
+  const { tokenSwapper, setActionType } = useTokenSwapper();
+
+  const activeClass = classNames("text-primary border-b-2 border-primary");
+  const defaultClass = classNames("border-b border-[#D1D1D1] opacity-50");
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 100 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full"
+    >
+      <ul className="flex text-xl w-full">
+        <li
+          onClick={() => setActionType("swap")}
+          className={
+            "grow pb-3 cursor-pointer pr-4 font-medium " +
+            (tokenSwapper.actionType == "swap" ? activeClass : defaultClass)
+          }
+        >
+          Swap
+        </li>
+        <li
+          onClick={() => setActionType("order")}
+          title="Coming Soon"
+          className={
+            "grow pr-4 font-medium cursor-pointer " +
+            (tokenSwapper.actionType == "order" ? activeClass : defaultClass)
+          }
+        >
+          Order
+        </li>
+      </ul>
+      <div className="flex flex-col mt-6 h-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tokenSwapper.actionType}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {tokenSwapper.actionType == "swap" && (
+              <SwapAction routes={routes} />
+            )}
+            {tokenSwapper.actionType == "order" && <OrderAction />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+export function OrderAction() {
+  const account = useAccount();
+  return (
+    <>
+      <div className="flex flex-col mb-4">
+        <label
+          htmlFor="in"
+          className="flex flex-col relative w-full bg-gray-100 border border-border py-4 ring ring-transparent transition rounded-xl px-4 focus-within:ring-primary-light "
+        >
+          <span className="text-[#777] text-sm font-medium mb-2">
+            You sell at most
+          </span>
+          <input
+            id="in"
+            required
+            className=" text-xl font-semibold text-primary-dark outline-none bg-transparent"
+            placeholder="0.0"
+            type="text"
+          />
+          <SwapperChainButton type={SwapperChainButtonType.Sell} />
+          {account.isConnected && (
+            <p className="text-sm text-right ml-auto text-[#777] mt-4 truncate w-32">
+              Balance: 0
+            </p>
+          )}
+        </label>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <label
+          htmlFor="limitPrice"
+          className="col-span-2 rounded-xl bg-gray-100 border border-border px-4 py-2 ring ring-transparent focus-within:ring-primary"
+        >
+          <span className="text-[#777] text-sm font-medium">Limit price</span>
+          <input
+            id="limitPrice"
+            className="bg-transparent outline-none text-lg mt-2 font-medium"
+            type="text"
+          />
+        </label>
+        <label
+          htmlFor="expiry"
+          className="col-span-1 rounded-xl bg-gray-100 border border-border px-4 py-2 ring ring-transparent focus-within:ring-primary"
+        >
+          <span className="text-[#777] text-sm font-medium">Expiry</span>
+          <div className="flex justify-between items-center mt-2">
+            <span className="font-medium">7 Days</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+              />
+            </svg>
+          </div>
+        </label>
+      </div>
+
+      <hr className="my-8" />
+      <div className="flex flex-col mb-4">
+        <label
+          htmlFor="out"
+          className="flex flex-col relative w-full bg-gray-100 border border-border py-4 ring ring-transparent transition rounded-xl px-4 focus-within:ring-primary-light "
+        >
+          <span className="text-[#777] text-sm font-medium mb-2">
+            You receive exactly
+          </span>
+          <input
+            id="out"
+            required
+            className="font-semibold text-primary-dark outline-none bg-transparent text-xl"
+            placeholder="0.0"
+            type="text"
+          />
+          <SwapperChainButton type={SwapperChainButtonType.Buy} />
+        </label>
+      </div>
+
+      <div className="flex flex-col">
+        {!account.isConnected && (
+          <button className="rounded-xl px-4 text-base py-4 mt-2 shadow bg-primary text-white font-medium hover:bg-primary-light active:scale-95 transition">
+            Connect Wallet
+          </button>
+        )}
+      </div>
+    </>
+  );
+}
+
+export function SwapAction({ routes }: any) {
   const tokenSwapper = useTokenSwapper();
   const sellInputRef = useRef<any>(null);
   const [sellInput, setSellInput] = useState<any>(null);
+  const feeData = useFeeData({
+    watch: true,
+  });
 
   useEffect(() => {
     const numberInput = new NumberInput({
@@ -269,7 +430,7 @@ export function Swapper({ routes }: any) {
       },
     });
 
-    numberInput.setValue(1);
+    numberInput.setValue(0);
 
     setSellInput(numberInput);
 
@@ -434,6 +595,7 @@ export function Swapper({ routes }: any) {
   });
 
   useEffect(() => {
+    approveContract.reset();
     ownerTokenAllowance.contract.refetch();
   }, [approveWaitForTransaction.isSuccess, swapWaitForTransaction.isSuccess]);
 
@@ -468,6 +630,12 @@ export function Swapper({ routes }: any) {
         swapContract.reset();
         approveContract.reset();
       }, 2000);
+
+      balanceOf
+        .getBalance(tokenSwapper.tokenSwapper.sellToken?.address!)
+        .then((balance) => {
+          setSellTokenBalance(balance.formatted);
+        });
     }
   }, [swapWaitForTransaction.isSuccess]);
 
@@ -492,133 +660,177 @@ export function Swapper({ routes }: any) {
     };
   }, [tokenSwapper.tokenSwapper.sellToken?.address]);
 
+  const changeTokens = () => {
+    const old = {
+      sellToken: tokenSwapper.tokenSwapper.sellToken,
+      buyToken: tokenSwapper.tokenSwapper.buyToken,
+    };
+    tokenSwapper.setSellToken(old.buyToken!);
+    tokenSwapper.setBuyToken(old.sellToken!);
+  };
+
   const handleAllInClick = () => {
     sellInput.setValue(sellTokenBalance);
   };
-
   return (
-    <div className="px-6 py-8 w-full xl:w-96 flex flex-col rounded-custom border border-border bg-secondary h-full">
-      <ul className="flex text-xl w-full">
-        <li className="text-primary grow border-b-2 border-primary pb-3 pb-cursor-pointer pr-4 font-medium">
-          Swap
-        </li>
-        <li
-          title="Coming Soon"
-          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
+    <>
+      <div className="flex flex-col">
+        <label
+          htmlFor="in"
+          className="flex flex-col relative w-full bg-gray-100 border border-borderg py-4 ring ring-transparent transition rounded-xl px-4 focus-within:ring-primary-light"
         >
-          Transfer
-        </li>
-        <li
-          title="Coming Soon"
-          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
-        >
-          Limit
-        </li>
-        <li
-          title="Coming Soon"
-          className="cursor-not-allowed grow border-b border-[#D1D1D1] opacity-50 pr-4 font-medium"
-        >
-          OTC
-        </li>
-      </ul>
-      <div className="flex flex-col mt-6 gap-6 h-full">
-        <div className="flex flex-col">
-          <span className="text-xs font-medium mb-2">Out</span>
-          <div className="flex flex-col relative w-full bg-white border border-borderg py-4 ring ring-transparent transition rounded-xl px-4 focus-within:ring-primary-light">
-            <input
-              ref={sellInputRef}
-              required
-              className=" text-lg outline-none"
-              placeholder="0"
-              type="text"
-            />
-            <SwapperChainButton type={SwapperChainButtonType.Sell} />
-            {account.isConnected && (
-              <p
-                onClick={handleAllInClick}
-                title={NumberFormatter.format(sellTokenBalance)}
-                className="text-sm ml-auto text-[#777] mt-4 truncate w-32"
-              >
-                Balance: {NumberFormatter.format(sellTokenBalance)}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-xs font-medium mb-2">In</span>
-          <div className="flex flex-col relative w-full">
-            <input
-              value={
-                getAmountOutContract.isError
-                  ? tokenSwapper.tokenSwapper.amount == 0
-                    ? "Enter an amount"
-                    : getAmountOutContract.error?.name ==
-                      "ContractFunctionExecutionError"
-                    ? "No liquidity"
-                    : getAmountOutContract.error?.message
-                  : getAmountOutContract.isLoading
-                  ? "Loading..."
-                  : NumberFormatter.format(
-                      (getAmountOutContract.data as any) || 0,
-                    )
-              }
-              disabled
-              required
-              className={`rounded-xl px-4 text-lg py-4 bg-white border border-border outline-none ring ring-transparent focus:ring-primary-light transition ${
-                getAmountOutContract.isLoading ? "opacity-50" : ""
-              }`}
-              placeholder="0"
-              type="text"
-            />
-            <SwapperChainButton centered type={SwapperChainButtonType.Buy} />
-          </div>
-        </div>
-
-        <div className="flex flex-col mt-auto">
-          {!account.isConnected && (
-            <button
-              onClick={openConnectModal}
-              className="rounded-xl px-4 text-base py-4 mt-2 shadow bg-primary text-white font-medium hover:bg-primary-light active:scale-95 transition"
+          <input
+            ref={sellInputRef}
+            id="in"
+            required
+            className=" text-lg outline-none bg-transparent"
+            placeholder="0.0"
+            type="text"
+          />
+          <SwapperChainButton type={SwapperChainButtonType.Sell} />
+          {account.isConnected && (
+            <p
+              onClick={handleAllInClick}
+              title={NumberFormatter.format(sellTokenBalance)}
+              className="text-sm text-right ml-auto text-[#777] mt-4 truncate w-32"
             >
-              Connect Wallet
-            </button>
+              Balance: {NumberFormatter.format(sellTokenBalance)}
+            </p>
           )}
-          {account.isConnected &&
-            (ownerTokenAllowance.data?.allowance || 0) <
-              tokenSwapper.tokenSwapper.amount && (
-              <button
-                onClick={handleApproveClick}
-                disabled={
-                  approveWaitForTransaction.isLoading ||
-                  approveWaitForTransaction.isFetching
-                }
-                className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
-              >
-                {approveWaitForTransaction.isLoading ||
-                approveWaitForTransaction.isFetching
-                  ? "Approving..."
-                  : approveWaitForTransaction.isSuccess
-                  ? "Approved"
-                  : "Approve"}
-              </button>
-            )}
-          {account.isConnected &&
-            (ownerTokenAllowance.data?.allowance || 0) >=
-              tokenSwapper.tokenSwapper.amount && (
-              <button
-                onClick={handleSwapClick}
-                className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
-              >
-                {swapWaitForTransaction.isLoading ||
-                swapWaitForTransaction.isFetching
-                  ? "Swapping..."
-                  : swapWaitForTransaction.isSuccess
-                  ? "Swapped"
-                  : "Swap"}
-              </button>
-            )}
+        </label>
+      </div>
+      <div className="flex justify-center h-6">
+        <motion.div
+          variants={variants}
+          animate="flip3D"
+          onClick={changeTokens}
+          className="flex items-center justify-center w-10 h-10 rounded-xl border-4 border-white bg-gray-200 -mt-2 z-50 -mb-2 my-2 hover:-mt-3 transition-all cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6 stroke-primary"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75"
+            />
+          </svg>
+        </motion.div>
+      </div>
+      <div className="flex flex-col">
+        <div className="flex flex-col relative w-full">
+          <input
+            value={
+              getAmountOutContract.isError
+                ? tokenSwapper.tokenSwapper.amount == 0
+                  ? "0.0"
+                  : getAmountOutContract.error?.name ==
+                    "ContractFunctionExecutionError"
+                  ? "No liquidity"
+                  : getAmountOutContract.error?.message
+                : getAmountOutContract.isLoading
+                ? "Loading..."
+                : NumberFormatter.format(
+                    (getAmountOutContract.data as any) || 0,
+                  )
+            }
+            disabled
+            required
+            className={`rounded-xl px-4 text-lg py-4 bg-gray-100 border border-border outline-none ring ring-transparent focus:ring-primary-light transition ${
+              getAmountOutContract.isLoading ? "opacity-50" : ""
+            }`}
+            placeholder="0"
+            type="text"
+          />
+          <SwapperChainButton centered type={SwapperChainButtonType.Buy} />
         </div>
       </div>
-    </div>
+      <div className="flex flex-col gap-2 mt-6">
+        <div className="text-xs text-[#777] flex justify-between">
+          <span>Price</span>{" "}
+          <span className="font-bold">
+            1 {tokenSwapper.tokenSwapper.sellToken?.symbol} ={" "}
+            {NumberFormatter.format(
+              (getAmountOutContract.data as any) /
+                tokenSwapper.tokenSwapper.amount || 0,
+            )}{" "}
+            {tokenSwapper.tokenSwapper.buyToken?.symbol}
+          </span>
+        </div>
+        <div className="text-xs text-[#777] flex justify-between">
+          <span>Gas price</span>{" "}
+          <span className="font-bold">
+            {feeData.isLoading
+              ? "Loading..."
+              : feeData.isSuccess
+              ? feeData.data?.formatted.gasPrice
+              : "Error"}
+          </span>
+        </div>
+        <div className="text-xs text-[#777] flex justify-between">
+          <span>Fee</span> <span className="font-bold">0</span>
+        </div>
+        <div className="text-xs text-[#777] flex justify-between">
+          <span>Fees (incl. gas costs)</span>{" "}
+          <span className="font-bold">
+            {feeData.isLoading
+              ? "Loading..."
+              : feeData.isSuccess
+              ? feeData.data?.formatted.gasPrice
+              : "Error"}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col mt-8">
+        {!account.isConnected && (
+          <button
+            onClick={openConnectModal}
+            className="rounded-xl px-4 text-base py-4 mt-2 shadow bg-primary text-white font-medium hover:bg-primary-light active:scale-95 transition"
+          >
+            Connect Wallet
+          </button>
+        )}
+        {account.isConnected &&
+          (ownerTokenAllowance.data?.allowance || 0) <
+            tokenSwapper.tokenSwapper.amount && (
+            <button
+              onClick={handleApproveClick}
+              disabled={
+                approveWaitForTransaction.isLoading ||
+                approveWaitForTransaction.isFetching
+              }
+              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+            >
+              {approveWaitForTransaction.isLoading ||
+              approveWaitForTransaction.isFetching
+                ? "Approving..."
+                : approveWaitForTransaction.isSuccess
+                ? "Approved"
+                : "Approve"}
+            </button>
+          )}
+        {account.isConnected &&
+          (ownerTokenAllowance.data?.allowance || 0) >=
+            tokenSwapper.tokenSwapper.amount && (
+            <button
+              onClick={handleSwapClick}
+              className="rounded-xl px-4 text-lg py-4 mt-2 shadow bg-primary text-white font-semibold hover:bg-primary-light active:scale-95 transition"
+            >
+              {swapWaitForTransaction.isLoading ||
+              swapWaitForTransaction.isFetching
+                ? "Swapping..."
+                : swapWaitForTransaction.isSuccess
+                ? "Swapped"
+                : "Swap"}
+            </button>
+          )}
+      </div>
+    </>
   );
 }

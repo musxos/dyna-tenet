@@ -37,7 +37,7 @@ export const Pools: Pool[] = [
       address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
       price: 0.2,
       symbol: "wABS",
-      image: "/wtenet.png",
+      image: "/wABS.png",
     },
     pool: {
       pairAddress: "0xa7d7987715C3011828ccb46E827dc3Aab62060F1",
@@ -58,8 +58,8 @@ export const Pools: Pool[] = [
     target: {
       address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
       price: 0.2,
-      symbol: "wTENET",
-      image: "/wtenet.png",
+      symbol: "wABS",
+      image: "/wABS.png",
     },
     pool: {
       pairAddress: "0xa7EAcE846c98Dee2A06e07B08AF80D772b2bF3e5",
@@ -80,8 +80,8 @@ export const Pools: Pool[] = [
     target: {
       address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
       price: 0.2,
-      symbol: "wTENET",
-      image: "/wtenet.png",
+      symbol: "wABS",
+      image: "/wABS.png",
     },
     pool: {
       pairAddress: "0xE6F0Ca507F31F3602a0518aE8088825f9cd89E81",
@@ -102,8 +102,8 @@ export const Pools: Pool[] = [
     target: {
       address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
       price: 0.2,
-      symbol: "wTENET",
-      image: "/wtenet.png",
+      symbol: "wABS",
+      image: "/wABS.png",
     },
     pool: {
       pairAddress: "0xE01fAc1f4C479b6aFf9baA26849846AF6b1DA7f6",

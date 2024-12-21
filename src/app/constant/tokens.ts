@@ -14,8 +14,8 @@ export const test = [
     pairs: ["0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b"],
   },
   {
-    name: "wTENET",
-    symbol: "wTENET",
+    name: "Abstract",
+    symbol: "wABS",
     address: "0x2994ea5e2DEeE06A6181f268C3692866C4BE6E9b",
     image: "/wTENET.png",
     pairs: [
